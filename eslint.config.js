@@ -3,7 +3,10 @@ import globals from 'globals'
 import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
 import pluginOxlint from 'eslint-plugin-oxlint'
-import skipFormatting from 'eslint-config-prettier/flat'
+// Убираем skipFormatting, он нам больше не нужен
+// import skipFormatting from 'eslint-config-prettier/flat'
+import pluginPrettier from 'eslint-plugin-prettier'
+import configPrettier from 'eslint-config-prettier'
 
 export default defineConfig([
   {
@@ -11,7 +14,7 @@ export default defineConfig([
     files: ['**/*.{vue,js,mjs,jsx}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '**/.vscode/**']),
 
   {
     languageOptions: {
@@ -26,5 +29,14 @@ export default defineConfig([
 
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 
-  skipFormatting,
+  // Добавляем Prettier как плагин
+  {
+    plugins: {
+      prettier: pluginPrettier,
+    },
+    rules: {
+      'prettier/prettier': 'error', // Ошибки форматирования Prettier будут показываться как ESLint ошибки
+      ...configPrettier.rules, // Отключаем правила ESLint, которые конфликтуют с Prettier
+    },
+  },
 ])
