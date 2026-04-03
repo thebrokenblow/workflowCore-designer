@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: 'ActionBlockToolBox',
+  name: 'ActionBlockMenu',
 }
 </script>
 

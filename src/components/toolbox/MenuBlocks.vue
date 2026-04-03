@@ -4,19 +4,19 @@
       <h3 class="toolbox__title">Блоки</h3>
     </div>
     <div class="toolbox__content">
-      <ActionBlockToolBox draggable="true" @dragstart="onDragStart($event, actionBlock)" />
+      <ActionBlockMenu draggable="true" @dragstart="onDragStart($event, actionBlock)" />
     </div>
   </div>
 </template>
 
 <script>
-import ActionBlockToolBox from './blocks/ActionBlockToolBox.vue'
+import ActionBlockMenu from './blocks/ActionBlockMenu.vue'
 
 export default {
-  name: 'ToolBox',
+  name: 'MenuBlocks',
 
   components: {
-    ActionBlockToolBox,
+    ActionBlockMenu,
   },
 
   data() {
