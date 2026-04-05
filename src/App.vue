@@ -160,9 +160,7 @@ export default {
       event.preventDefault()
 
       const rawData = event.dataTransfer.getData('application/json')
-      if (!rawData) {
-        return
-      }
+      if (!rawData) return
 
       const blockData = JSON.parse(rawData)
       const vueFlowElement = this.$refs.vueFlowRef.$el
@@ -175,9 +173,7 @@ export default {
       }
 
       this.addNode(blockData, position)
-      setTimeout(() => {
-        this.forceUpdateEdges()
-      }, 50)
+      setTimeout(() => this.forceUpdateEdges(), 50)
     },
 
     onConnect(connection) {
@@ -187,7 +183,7 @@ export default {
         target: connection.target,
         sourceHandle: connection.sourceHandle,
         targetHandle: connection.targetHandle,
-        animated: true,
+        animated: false,
         style: { stroke: '#4CAF50', strokeWidth: 2 },
         label: 'next',
         labelStyle: { fill: '#4CAF50', fontWeight: 'bold' },
@@ -195,9 +191,7 @@ export default {
       }
 
       this.edges.push(newEdge)
-      setTimeout(() => {
-        this.forceUpdateEdges()
-      }, 50)
+      setTimeout(() => this.forceUpdateEdges(), 50)
     },
 
     onEdgeClick(event, edge) {
@@ -250,9 +244,7 @@ export default {
       }
 
       this.nodes.push(newNode)
-      setTimeout(() => {
-        this.forceUpdateEdges()
-      }, 50)
+      setTimeout(() => this.forceUpdateEdges(), 50)
     },
 
     getNextNodeNumber(name) {
@@ -265,9 +257,7 @@ export default {
     deleteNode(nodeId) {
       this.nodes = this.nodes.filter((node) => node.id !== nodeId)
       this.edges = this.edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
-      setTimeout(() => {
-        this.forceUpdateEdges()
-      }, 50)
+      setTimeout(() => this.forceUpdateEdges(), 50)
     },
   },
 }

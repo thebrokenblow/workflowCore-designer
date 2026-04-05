@@ -54,11 +54,19 @@
           type="text"
           class="flow-node__header-input"
           @keyup.enter="disableHeaderEditing"
+          @blur="disableHeaderEditing"
         />
         <div v-else class="flow-node__header-title" @dblclick.stop="enableHeaderEditing">
           <span class="flow-node__header-icon">⚡</span>
-          <span>{{ nameHeader || 'Новый шаг' }}</span>
-          <button class="flow-node__edit-btn">✎</button>
+          <span class="flow-node__header-name" :title="nameHeader || 'Новый шаг'">
+            {{ nameHeader || 'Новый шаг' }}
+          </span>
+          <div class="flow-node__header-buttons">
+            <button class="flow-node__edit-btn" title="Редактировать название">✎</button>
+            <button class="flow-node__delete-btn" title="Удалить блок" @click.stop="confirmDelete">
+              🗑
+            </button>
+          </div>
         </div>
       </div>
 
@@ -70,8 +78,15 @@
           v-model="description"
           class="flow-node__description-textarea"
           placeholder="Описание шага..."
+          @blur="disableDescriptionEditing"
+          @keyup.escape="disableDescriptionEditing"
         ></textarea>
-        <div v-else class="flow-node__description-text" @dblclick.stop="enableDescriptionEditing">
+        <div
+          v-else
+          class="flow-node__description-text"
+          @dblclick.stop="enableDescriptionEditing"
+          :title="description || 'Добавить описание...'"
+        >
           {{ description || 'Добавить описание...' }}
         </div>
       </div>
@@ -295,6 +310,12 @@ export default {
       this.emitUpdateDimensions()
     },
 
+    confirmDelete() {
+      if (confirm(`Удалить блок "${this.nameHeader}"?`)) {
+        this.$emit('delete', this.id)
+      }
+    },
+
     addInput() {
       this.inputsList.push({
         id: this.nextInputId++,
@@ -327,6 +348,8 @@ export default {
   position: relative;
   display: inline-block;
   min-width: 280px;
+  max-width: 400px;
+  width: auto;
   min-height: auto;
   background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   border-radius: 16px;
@@ -348,6 +371,7 @@ export default {
   z-index: 1;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .flow-node__handles {
@@ -435,37 +459,51 @@ export default {
   font-size: 14px;
   cursor: pointer;
   position: relative;
+  min-width: 0;
 }
 
 .flow-node__header-icon {
   font-size: 18px;
+  flex-shrink: 0;
 }
 
-.flow-node__header-title span:not(.flow-node__header-icon) {
+.flow-node__header-name {
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
-.flow-node__edit-btn {
-  opacity: 0;
+.flow-node__header-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.flow-node__edit-btn,
+.flow-node__delete-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   border-radius: 6px;
   color: white;
   cursor: pointer;
   font-size: 12px;
-  padding: 2px 6px;
+  padding: 4px 8px;
   transition: all 0.2s;
-}
-
-.flow-node__header-title:hover .flow-node__edit-btn {
-  opacity: 1;
+  backdrop-filter: blur(2px);
+  flex-shrink: 0;
 }
 
 .flow-node__edit-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.flow-node__delete-btn:hover {
+  background: #ef5350;
+  color: white;
   transform: scale(1.05);
 }
 
@@ -479,6 +517,7 @@ export default {
   font-weight: 600;
   padding: 6px 12px;
   outline: none;
+  box-sizing: border-box;
 }
 
 .flow-node__description {
@@ -493,7 +532,9 @@ export default {
   line-height: 1.5;
   cursor: pointer;
   transition: color 0.2s;
-  min-height: 36px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .flow-node__description-text:hover {
@@ -513,6 +554,7 @@ export default {
   resize: vertical;
   outline: none;
   min-height: 60px;
+  box-sizing: border-box;
 }
 
 .flow-node__description-textarea:focus {
@@ -563,6 +605,7 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .flow-node__add-btn:hover {
@@ -601,6 +644,7 @@ export default {
   font-family: monospace;
   outline: none;
   transition: all 0.2s;
+  min-width: 0;
 }
 
 .flow-node__param-key:focus {
@@ -611,6 +655,7 @@ export default {
 .flow-node__param-colon {
   color: #adb5bd;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .flow-node__param-value {
@@ -623,6 +668,7 @@ export default {
   font-family: monospace;
   outline: none;
   transition: all 0.2s;
+  min-width: 0;
 }
 
 .flow-node__param-value:focus {
@@ -643,6 +689,7 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .flow-node__remove-btn:hover {
