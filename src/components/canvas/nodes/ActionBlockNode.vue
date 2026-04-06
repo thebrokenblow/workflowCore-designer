@@ -57,7 +57,6 @@
           @blur="disableHeaderEditing"
         />
         <div v-else class="flow-node__header-title" @dblclick.stop="enableHeaderEditing">
-          <span class="flow-node__header-icon">⚡</span>
           <span class="flow-node__header-name" :title="nameHeader || 'Новый шаг'">
             {{ nameHeader || 'Новый шаг' }}
           </span>
@@ -460,11 +459,6 @@ export default {
   cursor: pointer;
   position: relative;
   min-width: 0;
-}
-
-.flow-node__header-icon {
-  font-size: 18px;
-  flex-shrink: 0;
 }
 
 .flow-node__header-name {

@@ -4,19 +4,30 @@
       <h3 class="toolbox__title">Блоки</h3>
     </div>
     <div class="toolbox__content">
-      <ActionBlockMenu draggable="true" @dragstart="onDragStart($event, actionBlock)" />
+      <ActionBlockMenu
+        draggable="true"
+        :block="actionBlock"
+        @dragstart="onDragStart($event, actionBlock)"
+      />
+      <ConditionBlockMenu
+        draggable="true"
+        :block="conditionBlock"
+        @dragstart="onDragStart($event, conditionBlock)"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import ActionBlockMenu from './blocks/ActionBlockMenu.vue'
+import ConditionBlockMenu from './blocks/ConditionBlockMenu.vue'
 
 export default {
   name: 'MenuBlocks',
 
   components: {
     ActionBlockMenu,
+    ConditionBlockMenu,
   },
 
   data() {
@@ -38,6 +49,19 @@ export default {
           },
         },
       },
+      conditionBlock: {
+        type: 'ConditionBlock',
+        name: 'Условие',
+        description: 'Блок условия (ромб)',
+        icon: '🔀',
+        defaultData: {
+          label: 'ConditionBlock',
+          description: 'Блок условия',
+          condition: '',
+          trueActions: [],
+          falseActions: [],
+        },
+      },
     }
   },
 
@@ -52,7 +76,6 @@ export default {
 </script>
 
 <style scoped>
-/* Блок Toolbox */
 .toolbox {
   width: 320px;
   background: white;
@@ -64,7 +87,6 @@ export default {
   animation: toolbox__slideInLeft 0.3s ease-out;
 }
 
-/* Анимация появления */
 @keyframes toolbox__slideInLeft {
   from {
     opacity: 0;
@@ -76,7 +98,6 @@ export default {
   }
 }
 
-/* Элемент: header */
 .toolbox__header {
   background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
   padding: 20px;
@@ -84,7 +105,6 @@ export default {
   position: relative;
 }
 
-/* Элемент: title */
 .toolbox__title {
   margin: 0;
   color: white;
@@ -94,13 +114,14 @@ export default {
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Элемент: content */
 .toolbox__content {
   padding: 20px;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
   .toolbox {
     width: 100%;

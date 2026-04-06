@@ -21,8 +21,16 @@
           @node-drag-stop="onNodeDragStop"
           @pan-end="forceUpdateEdges"
         >
-          <template #node-custom="{ data, id }">
+          <template #node-actionBlock="{ data, id }">
             <ActionBlockNode
+              :data="data"
+              :id="id"
+              @delete="deleteNode"
+              @update-dimensions="onNodeDimensionsUpdate"
+            />
+          </template>
+          <template #node-conditionBlock="{ data, id }">
+            <ConditionBlock
               :data="data"
               :id="id"
               @delete="deleteNode"
@@ -37,7 +45,10 @@
 
 <script>
 import { VueFlow } from '@vue-flow/core'
+
 import ActionBlockNode from './components/canvas/nodes/ActionBlockNode.vue'
+import ConditionBlock from './components/canvas/nodes/ConditionBlock.vue'
+
 import ToolBar from './components/toolbar/ToolBar.vue'
 import MenuBlocks from './components/toolbox/MenuBlocks.vue'
 
@@ -52,17 +63,19 @@ export default {
     ToolBar,
     MenuBlocks,
     ActionBlockNode,
+    ConditionBlock,
   },
 
   data() {
     return {
       nodeTypes: {
-        custom: ActionBlockNode,
+        actionBlock: ActionBlockNode,
+        conditionBlock: ConditionBlock,
       },
       nodes: [
         {
           id: 'LoadTradesFromReportStep',
-          type: 'custom',
+          type: 'actionBlock',
           position: { x: 250, y: 5 },
           data: {
             nameHeader: 'LoadTradesFromReportStep',
@@ -79,7 +92,7 @@ export default {
         },
         {
           id: 'LoadTradesFromServiceStep',
-          type: 'custom',
+          type: 'actionBlock',
           position: { x: 800, y: 400 },
           data: {
             nameHeader: 'LoadTradesFromServiceStep',
@@ -96,7 +109,7 @@ export default {
         },
         {
           id: 'RevisionTradesStep',
-          type: 'custom',
+          type: 'actionBlock',
           position: { x: 800, y: 800 },
           data: {
             nameHeader: 'RevisionTradesStep',
@@ -160,19 +173,32 @@ export default {
       event.preventDefault()
 
       const rawData = event.dataTransfer.getData('application/json')
-      if (!rawData) return
+      if (!rawData) {
+        return
+      }
 
       const blockData = JSON.parse(rawData)
       const vueFlowElement = this.$refs.vueFlowRef.$el
       const rect = vueFlowElement.getBoundingClientRect()
       const viewport = this.$refs.vueFlowRef.getViewport()
 
-      const position = {
-        x: (event.clientX - rect.left - 140) / viewport.zoom - viewport.x,
-        y: (event.clientY - rect.top - 120) / viewport.zoom - viewport.y,
+      // Определяем тип узла и смещение в зависимости от блока
+      let nodeType = 'actionBlock'
+      let offsetX = 140 // половина ширины action блока
+      let offsetY = 120 // половина высоты action блока
+
+      if (blockData.type === 'ConditionBlock') {
+        nodeType = 'conditionBlock'
+        offsetX = 50 // половина ширины ромба (100/2)
+        offsetY = 50 // половина высоты ромба (100/2)
       }
 
-      this.addNode(blockData, position)
+      const position = {
+        x: (event.clientX - rect.left - offsetX) / viewport.zoom - viewport.x,
+        y: (event.clientY - rect.top - offsetY) / viewport.zoom - viewport.y,
+      }
+
+      this.addNode(blockData, position, nodeType)
       setTimeout(() => this.forceUpdateEdges(), 50)
     },
 
@@ -194,7 +220,7 @@ export default {
       setTimeout(() => this.forceUpdateEdges(), 50)
     },
 
-    onEdgeClick(event, edge) {
+    onEdgeClick(edge) {
       if (confirm('Удалить соединение?')) {
         this.edges = this.edges.filter((e) => e.id !== edge.id)
         this.forceUpdateEdges()
@@ -222,14 +248,21 @@ export default {
       this.$forceUpdate()
     },
 
-    addNode(block, position) {
+    addNode(block, position, nodeType = 'actionBlock') {
       const nodeId = `${block.type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-      const newNode = {
-        id: nodeId,
-        type: 'custom',
-        position: position,
-        data: {
+      // eslint-disable-next-line no-useless-assignment
+      let nodeData = {}
+
+      if (block.type === 'ConditionBlock') {
+        nodeData = {
+          nameHeader: `${block.name}_${this.getNextNodeNumber(block.name)}`,
+          condition: '',
+          trueActions: [],
+          falseActions: [],
+        }
+      } else {
+        nodeData = {
           nameHeader: `${block.name}_${this.getNextNodeNumber(block.name)}`,
           description: '',
           inputsList: [],
@@ -240,7 +273,14 @@ export default {
             bottom: 'source',
             left: 'target',
           },
-        },
+        }
+      }
+
+      const newNode = {
+        id: nodeId,
+        type: nodeType,
+        position: position,
+        data: nodeData,
       }
 
       this.nodes.push(newNode)
