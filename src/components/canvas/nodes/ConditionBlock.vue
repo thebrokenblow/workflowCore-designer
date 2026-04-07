@@ -273,7 +273,7 @@ export default {
   position: relative;
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
@@ -303,7 +303,7 @@ export default {
   width: 14px !important;
   height: 14px !important;
   background: white !important;
-  border: 2px solid #ff9800 !important;
+  border: 2px solid #4caf50 !important;
   border-radius: 50% !important;
   transition: all 0.2s ease !important;
   cursor: crosshair !important;
@@ -312,9 +312,9 @@ export default {
 
 .condition-node__handle:hover {
   transform: scale(1.5) !important;
-  background: #ff9800 !important;
+  background: #4caf50 !important;
   border-color: white !important;
-  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.3) !important;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3) !important;
 }
 
 .condition-node__handle--top {
@@ -453,7 +453,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   color: white;
 }
 
@@ -514,8 +514,8 @@ export default {
 .condition-node__modal-field input:focus,
 .condition-node__modal-field textarea:focus {
   outline: none;
-  border-color: #ff9800;
-  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.1);
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
 }
 
 .condition-node__actions-editor {
@@ -599,11 +599,11 @@ export default {
 }
 
 .condition-node__modal-btn--save {
-  background: #ff9800;
+  background: #4caf50;
   color: white;
 }
 
 .condition-node__modal-btn--save:hover {
-  background: #f57c00;
+  background: #2e7d32;
 }
 </style>

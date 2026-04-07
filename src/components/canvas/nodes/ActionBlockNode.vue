@@ -355,6 +355,7 @@ export default {
   padding: 2px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .flow-node:hover {
@@ -456,6 +457,7 @@ export default {
   color: white;
   font-weight: 600;
   font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
   cursor: pointer;
   position: relative;
   min-width: 0;
@@ -509,6 +511,7 @@ export default {
   color: #333;
   font-size: 14px;
   font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
   padding: 6px 12px;
   outline: none;
   box-sizing: border-box;
@@ -524,6 +527,7 @@ export default {
   color: #6c757d;
   font-size: 12px;
   line-height: 1.5;
+  font-family: 'Segoe UI', sans-serif;
   cursor: pointer;
   transition: color 0.2s;
   word-wrap: break-word;
@@ -542,7 +546,7 @@ export default {
   border-radius: 8px;
   color: #495057;
   font-size: 12px;
-  font-family: inherit;
+  font-family: 'Segoe UI', sans-serif;
   line-height: 1.5;
   padding: 8px;
   resize: vertical;
@@ -578,6 +582,7 @@ export default {
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
   color: #495057;
 }
 
@@ -635,7 +640,7 @@ export default {
   border-radius: 6px;
   padding: 4px 8px;
   font-size: 11px;
-  font-family: monospace;
+  font-family: 'Segoe UI', monospace;
   outline: none;
   transition: all 0.2s;
   min-width: 0;
@@ -659,7 +664,7 @@ export default {
   border-radius: 6px;
   padding: 4px 8px;
   font-size: 11px;
-  font-family: monospace;
+  font-family: 'Segoe UI', monospace;
   outline: none;
   transition: all 0.2s;
   min-width: 0;
@@ -700,5 +705,6 @@ export default {
   padding: 12px;
   background: #f8f9fa;
   border-radius: 8px;
+  font-family: 'Segoe UI', sans-serif;
 }
 </style>

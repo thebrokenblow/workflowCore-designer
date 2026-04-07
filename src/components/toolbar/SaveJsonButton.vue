@@ -1,7 +1,7 @@
 <template>
   <button class="save-json-button">
     <span class="save-json-button__icon">📄</span>
-    Сохранить Workflow JSON
+    <span class="save-json-button__text">Сохранить Workflow JSON</span>
   </button>
 </template>
 
@@ -16,17 +16,34 @@ export default {
 .save-json-button {
   background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
   color: white;
-  padding: 12px 24px;
+  padding: 12px 20px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   transition: all 0.3s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  min-width: fit-content;
+  max-width: 100%;
+}
+
+/* Элемент: текст кнопки */
+.save-json-button__text {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Элемент: иконка кнопки */
+.save-json-button__icon {
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
 /* Hover состояние кнопки */
@@ -40,15 +57,14 @@ export default {
   transform: translateY(0);
 }
 
-/* Элемент: иконка кнопки */
-.save-json-button__icon {
-  font-size: 18px;
-}
-
 /* Модификатор: полная ширина */
 .save-json-button--full-width {
   width: 100%;
   justify-content: center;
+}
+
+.save-json-button--full-width .save-json-button__text {
+  white-space: nowrap;
 }
 
 /* Модификатор: маленький размер */
@@ -71,12 +87,29 @@ export default {
 /* Медиа-запрос для мобильных устройств */
 @media (max-width: 768px) {
   .save-json-button {
-    padding: 8px 16px;
+    padding: 10px 16px;
     font-size: 12px;
+    white-space: normal;
+  }
+
+  .save-json-button__text {
+    white-space: normal;
+    word-break: keep-all;
   }
 
   .save-json-button__icon {
     font-size: 14px;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+  .save-json-button {
+    padding: 8px 12px;
+  }
+
+  .save-json-button__text {
+    font-size: 11px;
   }
 }
 </style>

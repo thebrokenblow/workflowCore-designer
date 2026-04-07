@@ -1,22 +1,55 @@
 <template>
-  <div class="action-block" draggable="true">
-    <div class="action-block__info">
-      <div class="action-block__name">Действие</div>
-      <div class="action-block__description">Базовый блок действия для выполнения операций</div>
+  <div class="block-menu" draggable="true" @dragstart="onDragStart">
+    <div class="block-menu__info">
+      <div class="block-menu__name">
+        <span v-if="icon" class="block-menu__icon">{{ icon }}</span>
+        {{ name }}
+      </div>
+      <div class="block-menu__description">{{ description }}</div>
     </div>
-    <div class="action-block__drag-handle">⋮⋮</div>
+    <div class="block-menu__drag-handle">⋮⋮</div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'ActionBlockMenu',
+  name: 'BlockMenu',
+
+  props: {
+    name: {
+      type: String,
+      required: true,
+      default: 'Блок',
+    },
+    description: {
+      type: String,
+      required: true,
+      default: 'Описание блока',
+    },
+    icon: {
+      type: String,
+      default: '',
+    },
+    blockData: {
+      type: Object,
+      required: true,
+      default: () => ({}),
+    },
+  },
+
+  methods: {
+    onDragStart(event) {
+      event.dataTransfer.setData('application/json', JSON.stringify(this.blockData))
+      event.dataTransfer.effectAllowed = 'copy'
+      event.dataTransfer.dropEffect = 'copy'
+    },
+  },
 }
 </script>
 
 <style scoped>
 /* Блок */
-.action-block {
+.block-menu {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -31,7 +64,7 @@ export default {
 }
 
 /* Эффект волны при наведении */
-.action-block::before {
+.block-menu::before {
   content: '';
   position: absolute;
   top: 0;
@@ -43,11 +76,11 @@ export default {
 }
 
 /* Hover эффекты */
-.action-block:hover::before {
+.block-menu:hover::before {
   left: 100%;
 }
 
-.action-block:hover {
+.block-menu:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
   border-color: #4caf50;
@@ -55,17 +88,17 @@ export default {
 }
 
 /* Активное состояние (при перетаскивании) */
-.action-block:active {
+.block-menu:active {
   cursor: grabbing;
 }
 
 /* Элемент: info */
-.action-block__info {
+.block-menu__info {
   flex: 1;
 }
 
 /* Элемент: name */
-.action-block__name {
+.block-menu__name {
   font-weight: bold;
   font-size: 16px;
   color: #333;
@@ -74,14 +107,22 @@ export default {
     Segoe UI,
     sans-serif;
   transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.action-block:hover .action-block__name {
+.block-menu:hover .block-menu__name {
   color: #4caf50;
 }
 
+/* Элемент: icon */
+.block-menu__icon {
+  font-size: 18px;
+}
+
 /* Элемент: description */
-.action-block__description {
+.block-menu__description {
   font-size: 11px;
   color: #666;
   line-height: 1.4;
@@ -91,7 +132,7 @@ export default {
 }
 
 /* Элемент: drag-handle */
-.action-block__drag-handle {
+.block-menu__drag-handle {
   color: #999;
   font-size: 20px;
   cursor: grab;
@@ -99,11 +140,11 @@ export default {
   transition: color 0.3s ease;
 }
 
-.action-block:hover .action-block__drag-handle {
+.block-menu:hover .block-menu__drag-handle {
   color: #4caf50;
 }
 
-.action-block__drag-handle:active {
+.block-menu__drag-handle:active {
   cursor: grabbing;
 }
 </style>

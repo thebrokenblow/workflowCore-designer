@@ -4,30 +4,30 @@
       <h3 class="toolbox__title">Блоки</h3>
     </div>
     <div class="toolbox__content">
-      <ActionBlockMenu
-        draggable="true"
-        :block="actionBlock"
-        @dragstart="onDragStart($event, actionBlock)"
+      <BlockMenu
+        name="Действие"
+        description="Базовый блок действия для выполнения операций"
+        icon="⚙️"
+        :block-data="actionBlock"
       />
-      <ConditionBlockMenu
-        draggable="true"
-        :block="conditionBlock"
-        @dragstart="onDragStart($event, conditionBlock)"
+      <BlockMenu
+        name="Условие"
+        description="Блок условия (ромб) - ветвление логики"
+        icon="🔀"
+        :block-data="conditionBlock"
       />
     </div>
   </div>
 </template>
 
 <script>
-import ActionBlockMenu from './blocks/ActionBlockMenu.vue'
-import ConditionBlockMenu from './blocks/ConditionBlockMenu.vue'
+import BlockMenu from './blocks/BlockMenu.vue'
 
 export default {
   name: 'MenuBlocks',
 
   components: {
-    ActionBlockMenu,
-    ConditionBlockMenu,
+    BlockMenu,
   },
 
   data() {
@@ -63,14 +63,6 @@ export default {
         },
       },
     }
-  },
-
-  methods: {
-    onDragStart(event, block) {
-      event.dataTransfer.setData('application/json', JSON.stringify(block))
-      event.dataTransfer.effectAllowed = 'copy'
-      event.dataTransfer.dropEffect = 'copy'
-    },
   },
 }
 </script>
