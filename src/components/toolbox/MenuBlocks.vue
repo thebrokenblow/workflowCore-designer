@@ -16,6 +16,18 @@
         icon="🔀"
         :block-data="conditionBlock"
       />
+      <BlockMenu
+        name="Parallel Split"
+        description="Параллельное разделение - запуск нескольких веток одновременно"
+        icon="⚡"
+        :block-data="parallelSplitBlock"
+      />
+      <BlockMenu
+        name="Sync"
+        description="Синхронизация потоков - ожидание завершения всех веток"
+        icon="🔄"
+        :block-data="syncBlock"
+      />
     </div>
   </div>
 </template>
@@ -60,6 +72,32 @@ export default {
           condition: '',
           trueActions: [],
           falseActions: [],
+        },
+      },
+      parallelSplitBlock: {
+        type: 'ParallelSplitBlock',
+        name: 'Parallel Split',
+        description: 'Параллельное разделение',
+        icon: '⚡',
+        defaultData: {
+          label: 'ParallelSplit',
+          description: 'Параллельное разделение',
+          branches: [
+            { id: 1, name: 'Ветка 1' },
+            { id: 2, name: 'Ветка 2' },
+            { id: 3, name: 'Ветка 3' },
+          ],
+        },
+      },
+      syncBlock: {
+        type: 'SyncBlock',
+        name: 'Sync',
+        description: 'Синхронизация потоков',
+        icon: '🔄',
+        defaultData: {
+          label: 'Sync',
+          description: 'Ожидание завершения всех веток',
+          syncCount: 3,
         },
       },
     }

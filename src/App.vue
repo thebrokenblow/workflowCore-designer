@@ -5,7 +5,6 @@
       <ToolBar @clear="handleClear" @save="handleSave" @load="handleLoad" />
       <CanvasComponent
         ref="canvasRef"
-        :initial-nodes="initialNodes"
         :initial-edges="initialEdges"
         @update:nodes="handleNodesUpdate"
         @update:edges="handleEdgesUpdate"
@@ -30,88 +29,6 @@ export default {
 
   data() {
     return {
-      initialNodes: [
-        {
-          id: 'LoadTradesFromReportStep',
-          type: 'actionBlock',
-          position: { x: 250, y: 5 },
-          data: {
-            nameHeader: 'LoadTradesFromReportStep',
-            description: 'Загрузка сделок из отчета',
-            inputsList: [{ id: 1, key: 'FilePath', value: 'data.FilePath' }],
-            outputsList: [{ id: 1, key: 'TradesFromReport', value: 'step.TradesFromReport' }],
-            handleTypes: {
-              top: 'target',
-              right: 'source',
-              bottom: 'source',
-              left: 'target',
-            },
-          },
-        },
-        {
-          id: 'LoadTradesFromServiceStep',
-          type: 'actionBlock',
-          position: { x: 800, y: 400 },
-          data: {
-            nameHeader: 'LoadTradesFromServiceStep',
-            description: 'Загрузка сделок из сервиса',
-            inputsList: [],
-            outputsList: [{ id: 1, key: 'TradesFromService', value: 'step.TradesFromService' }],
-            handleTypes: {
-              top: 'target',
-              right: 'source',
-              bottom: 'source',
-              left: 'target',
-            },
-          },
-        },
-        {
-          id: 'RevisionTradesStep',
-          type: 'actionBlock',
-          position: { x: 800, y: 800 },
-          data: {
-            nameHeader: 'RevisionTradesStep',
-            description: 'Ревью и проверка сделок',
-            inputsList: [
-              { id: 1, key: 'TradesFromReport', value: 'data.TradesFromReport' },
-              { id: 2, key: 'TradesFromService', value: 'data.TradesFromService' },
-            ],
-            outputsList: [],
-            handleTypes: {
-              top: 'target',
-              right: 'source',
-              bottom: 'source',
-              left: 'target',
-            },
-          },
-        },
-      ],
-      initialEdges: [
-        {
-          id: 'e1-2',
-          source: 'LoadTradesFromReportStep',
-          target: 'LoadTradesFromServiceStep',
-          sourceHandle: 'bottom-handle',
-          targetHandle: 'top-handle',
-          animated: false,
-          style: { stroke: '#4CAF50', strokeWidth: 2 },
-          label: 'next',
-          labelStyle: { fill: '#4CAF50', fontWeight: 'bold' },
-          markerEnd: { type: 'arrowclosed', color: '#4CAF50' },
-        },
-        {
-          id: 'e2-3',
-          source: 'LoadTradesFromServiceStep',
-          target: 'RevisionTradesStep',
-          sourceHandle: 'bottom-handle',
-          targetHandle: 'top-handle',
-          animated: false,
-          style: { stroke: '#4CAF50', strokeWidth: 2 },
-          label: 'next',
-          labelStyle: { fill: '#4CAF50', fontWeight: 'bold' },
-          markerEnd: { type: 'arrowclosed', color: '#4CAF50' },
-        },
-      ],
       currentNodes: [],
       currentEdges: [],
     }

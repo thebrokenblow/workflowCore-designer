@@ -17,16 +17,32 @@
         @node-drag-stop="onNodeDragStop"
         @pan-end="forceUpdateEdges"
       >
-        <template #node-actionBlock="{ data, id }">
-          <ActionBlockNode
+        <template #node-actionNode="{ data, id }">
+          <ActionNode
             :data="data"
             :id="id"
             @delete="deleteNode"
             @update-dimensions="onNodeDimensionsUpdate"
           />
         </template>
-        <template #node-conditionBlock="{ data, id }">
-          <ConditionBlock
+        <template #node-conditionNode="{ data, id }">
+          <ConditionNode
+            :data="data"
+            :id="id"
+            @delete="deleteNode"
+            @update-dimensions="onNodeDimensionsUpdate"
+          />
+        </template>
+        <template #node-parallelSplitNode="{ data, id }">
+          <ParallelSplitNode
+            :data="data"
+            :id="id"
+            @delete="deleteNode"
+            @update-dimensions="onNodeDimensionsUpdate"
+          />
+        </template>
+        <template #node-syncNode="{ data, id }">
+          <SyncNode
             :data="data"
             :id="id"
             @delete="deleteNode"
@@ -40,8 +56,12 @@
 
 <script>
 import { VueFlow } from '@vue-flow/core'
-import ActionBlockNode from './nodes/ActionBlockNode.vue'
-import ConditionBlock from './nodes/ConditionBlock.vue'
+
+import ActionNode from './nodes/ActionNode.vue'
+import ConditionNode from './nodes/ConditionNode.vue'
+import ParallelSplitNode from './nodes/ParallelSplitNode.vue'
+import SyncNode from './nodes/SyncNode.vue'
+
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 
@@ -50,8 +70,10 @@ export default {
 
   components: {
     VueFlow,
-    ActionBlockNode,
-    ConditionBlock,
+    ActionNode,
+    ConditionNode,
+    ParallelSplitNode,
+    SyncNode,
   },
 
   props: {
@@ -68,8 +90,10 @@ export default {
   data() {
     return {
       nodeTypes: {
-        actionBlock: ActionBlockNode,
-        conditionBlock: ConditionBlock,
+        actionNode: 'actionNode',
+        conditionNode: 'conditionNode',
+        parallelSplitNode: 'parallelSplitNode',
+        syncNode: 'syncNode',
       },
       nodes: [...this.initialNodes],
       edges: [...this.initialEdges],
@@ -130,18 +154,36 @@ export default {
       const rect = vueFlowElement.getBoundingClientRect()
       const viewport = this.$refs.vueFlowRef.getViewport()
 
+      // eslint-disable-next-line no-useless-assignment
       let nodeType = ''
+      // eslint-disable-next-line no-useless-assignment
       let offsetX = 0
+      // eslint-disable-next-line no-useless-assignment
       let offsetY = 0
 
-      if (blockData.type == 'ActionBlock') {
-        nodeType = 'actionBlock'
-        offsetX = 140
-        offsetY = 120
-      } else if (blockData.type === 'ConditionBlock') {
-        nodeType = 'conditionBlock'
-        offsetX = 50
-        offsetY = 50
+      switch (blockData.type) {
+        case 'ActionBlock':
+          nodeType = 'actionNode' // Исправлено: было 'actionBlock'
+          offsetX = 140
+          offsetY = 120
+          break
+        case 'ConditionBlock':
+          nodeType = 'conditionNode' // Исправлено: было 'conditionBlock'
+          offsetX = 50
+          offsetY = 50
+          break
+        case 'ParallelSplitBlock':
+          nodeType = 'parallelSplitNode' // Исправлено: было 'parallelSplitBlock'
+          offsetX = 60
+          offsetY = 60
+          break
+        case 'SyncBlock':
+          nodeType = 'syncNode' // Исправлено: было 'syncBlock'
+          offsetX = 60
+          offsetY = 60
+          break
+        default:
+          return
       }
 
       const position = {
@@ -154,6 +196,20 @@ export default {
     },
 
     onConnect(connection) {
+      // Проверяем, существует ли уже такое соединение
+      const isDuplicate = this.edges.some(
+        (edge) =>
+          edge.source === connection.source &&
+          edge.target === connection.target &&
+          edge.sourceHandle === connection.sourceHandle &&
+          edge.targetHandle === connection.targetHandle
+      )
+
+      if (isDuplicate) {
+        console.warn('Такое соединение уже существует')
+        return
+      }
+
       const newEdge = {
         id: `edge_${Date.now()}_${Math.random()}`,
         source: connection.source,
@@ -198,32 +254,77 @@ export default {
       this.$forceUpdate()
     },
 
-    addNode(block, position, nodeType = 'actionBlock') {
+    addNode(block, position, nodeType = 'actionNode') {
+      // Исправлено: было 'actionBlock'
       const nodeId = `${block.type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
       // eslint-disable-next-line no-useless-assignment
       let nodeData = {}
 
-      if (block.type === 'ConditionBlock') {
-        nodeData = {
-          nameHeader: `${block.name}_${this.getNextNodeNumber(block.name)}`,
-          condition: '',
-          trueActions: [],
-          falseActions: [],
-        }
-      } else {
-        nodeData = {
-          nameHeader: `${block.name}_${this.getNextNodeNumber(block.name)}`,
-          description: '',
-          inputsList: [],
-          outputsList: [],
-          handleTypes: {
-            top: 'target',
-            right: 'source',
-            bottom: 'source',
-            left: 'target',
-          },
-        }
+      switch (block.type) {
+        case 'ConditionBlock':
+          nodeData = {
+            nameHeader: `${block.name}_${this.getNextNodeNumber(block.name)}`,
+            description: '',
+            inputsList: [],
+            outputsList: [
+              { id: 1, key: 'True', value: 'true' },
+              { id: 2, key: 'False', value: 'false' },
+            ],
+            handleTypes: {
+              left: 'target',
+              right: 'source',
+              top: null,
+              bottom: null,
+            },
+          }
+          break
+
+        case 'ParallelSplitBlock':
+          nodeData = {
+            label: `${block.name}_${this.getNextNodeNumber(block.name)}`,
+            description: '',
+            branches: [
+              { id: 1, name: 'Ветка A' },
+              { id: 2, name: 'Ветка B' },
+            ],
+            handleTypes: {
+              left: 'target',
+              right: 'source',
+              top: null,
+              bottom: null,
+            },
+          }
+          break
+
+        case 'SyncBlock':
+          nodeData = {
+            label: `${block.name}_${this.getNextNodeNumber(block.name)}`,
+            description: '',
+            syncCount: 3,
+            handleTypes: {
+              left: 'target',
+              right: 'source',
+              top: null,
+              bottom: null,
+            },
+          }
+          break
+
+        default: // ActionBlock
+          nodeData = {
+            nameHeader: `${block.name}_${this.getNextNodeNumber(block.name)}`,
+            description: '',
+            inputsList: [],
+            outputsList: [],
+            handleTypes: {
+              left: 'target',
+              right: 'source',
+              top: null,
+              bottom: null,
+            },
+          }
+          break
       }
 
       const newNode = {
@@ -239,7 +340,7 @@ export default {
 
     getNextNodeNumber(name) {
       const nodesOfType = this.nodes.filter(
-        (node) => node.data.nameHeader && node.data.nameHeader.startsWith(name)
+        (node) => node.data?.nameHeader?.startsWith(name) || node.data?.label?.startsWith(name)
       )
       return nodesOfType.length + 1
     },
@@ -325,5 +426,11 @@ export default {
 :deep(.vue-flow__edge-label) {
   font-size: 12px;
   font-weight: bold;
+}
+
+:deep(.vue-flow__node.selected) {
+  outline: 2px solid #4caf50;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 </style>
