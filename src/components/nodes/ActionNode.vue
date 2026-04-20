@@ -1,22 +1,52 @@
 <template>
-  <div class="flow-node">
+  <div class="action-node">
     <!-- Точки соединения -->
-    <div class="flow-node__handles"></div>
-    <div class="flow-node__content">
+    <div class="action-node__handles">
+      <Handle
+        type="target"
+        :position="Position.Top"
+        id="top-handle"
+        class="action-node__handle action-node__handle--top"
+        :is-connectable="true"
+      />
+      <Handle
+        type="target"
+        :position="Position.Left"
+        id="left-handle"
+        class="action-node__handle action-node__handle--left"
+        :is-connectable="true"
+      />
+      <Handle
+        type="source"
+        :position="Position.Right"
+        id="right-handle"
+        class="action-node__handle action-node__handle--right"
+        :is-connectable="true"
+      />
+      <Handle
+        type="source"
+        :position="Position.Bottom"
+        id="bottom-handle"
+        class="action-node__handle action-node__handle--bottom"
+        :is-connectable="true"
+      />
+    </div>
+
+    <div class="action-node__content">
       <!-- Шапка -->
-      <div class="flow-node__header">
+      <div class="action-node__header">
         <input
           v-if="isEditingNameHeader"
           v-model="nameHeader"
           type="text"
-          class="flow-node__header-input"
+          class="action-node__header-input"
         />
-        <div v-else class="flow-node__header-title" @dblclick.stop="enableHeaderEditing">
-          <span class="flow-node__header-name" :title="nameHeader">
+        <div v-else class="action-node__header-title" @dblclick.stop="enableHeaderEditing">
+          <span class="action-node__header-name" :title="nameHeader">
             {{ nameHeader }}
           </span>
-          <div class="flow-node__header-buttons">
-            <button class="flow-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
+          <div class="action-node__header-buttons">
+            <button class="action-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
               &#x1F5D1;
             </button>
           </div>
@@ -24,32 +54,41 @@
       </div>
 
       <!-- Входные параметры и Выходные параметры -->
-      <div class="flow-node__section">
-        <div class="flow-node__section-header">
-          <div class="flow-node__section-title">
-            <span class="flow-node__section-icon">&#x1F4E5;</span>
+      <div class="action-node__section">
+        <div class="action-node__section-header">
+          <div class="action-node__section-title">
+            <span class="action-node__section-icon">&#x1F4E5;</span>
             Входные параметры
           </div>
-          <button class="flow-node__add-btn" @click.stop="addInput">+</button>
+          <button class="action-node__add-btn" @click.stop="addInput">+</button>
         </div>
       </div>
 
-      <div class="flow-node__section">
-        <div class="flow-node__section-header">
-          <div class="flow-node__section-title">
-            <span class="flow-node__section-icon">&#x1F4E4;</span>
+      <div class="action-node__section">
+        <div class="action-node__section-header">
+          <div class="action-node__section-title">
+            <span class="action-node__section-icon">&#x1F4E4;</span>
             Выходные параметры
           </div>
-          <button class="flow-node__add-btn" @click.stop="addOutput">+</button>
+          <button class="action-node__add-btn" @click.stop="addOutput">+</button>
         </div>
       </div>
+    </div>
+
+    <!-- Подпись снизу -->
+    <div class="action-node__label">
+      <span>Action</span>
     </div>
   </div>
 </template>
 
 <script>
+import { Handle, Position } from '@vue-flow/core'
+
 export default {
   name: 'ActionNode',
+
+  components: { Handle },
 
   props: {
     id: { type: String, required: true },
@@ -59,13 +98,21 @@ export default {
 
   data() {
     return {
-      nameHeader: 'Название дейтсвия',
+      nameHeader: 'Название действия',
       nameNode: '"Блок действия"',
       isEditingNameHeader: false,
+      Position: Position,
     }
   },
+
   methods: {
-    enableHeaderEditing() {},
+    enableHeaderEditing() {
+      this.isEditingNameHeader = true
+      this.$nextTick(() => {
+        const input = this.$el.querySelector('.action-node__header-input')
+        if (input) input.focus()
+      })
+    },
     deleteNode() {
       this.$emit('confirmDeleteNode', this.id, this.nameNode)
     },
@@ -76,7 +123,7 @@ export default {
 </script>
 
 <style scoped>
-.flow-node {
+.action-node {
   position: relative;
   display: inline-block;
   min-width: 280px;
@@ -91,12 +138,12 @@ export default {
   font-family: 'Segoe UI', sans-serif;
 }
 
-.flow-node:hover {
+.action-node:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
-.flow-node__content {
+.action-node__content {
   background: white;
   border-radius: 14px;
   overflow: hidden;
@@ -107,7 +154,7 @@ export default {
   width: 100%;
 }
 
-.flow-node__handles {
+.action-node__handles {
   position: absolute;
   top: 0;
   left: 0;
@@ -117,13 +164,73 @@ export default {
   z-index: 10;
 }
 
-.flow-node__header {
+.action-node__handle {
+  pointer-events: auto;
+  position: absolute !important;
+  width: 14px !important;
+  height: 14px !important;
+  background: white !important;
+  border: 2px solid #4caf50 !important;
+  border-radius: 50% !important;
+  transition: all 0.2s ease !important;
+  cursor: crosshair !important;
+  z-index: 20 !important;
+}
+
+.action-node__handle:hover {
+  transform: scale(1.5) !important;
+  background: #4caf50 !important;
+  border-color: white !important;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3) !important;
+}
+
+.action-node__handle--top {
+  top: -7px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+.action-node__handle--top:hover {
+  transform: translateX(-50%) scale(1.5) !important;
+}
+
+.action-node__handle--right {
+  right: -7px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.action-node__handle--right:hover {
+  transform: translateY(-50%) scale(1.5) !important;
+}
+
+.action-node__handle--bottom {
+  bottom: -7px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+.action-node__handle--bottom:hover {
+  transform: translateX(-50%) scale(1.5) !important;
+}
+
+.action-node__handle--left {
+  left: -7px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.action-node__handle--left:hover {
+  transform: translateY(-50%) scale(1.5) !important;
+}
+
+.action-node__header {
   background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   padding: 12px 16px;
   position: relative;
 }
 
-.flow-node__header-title {
+.action-node__header-title {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -136,7 +243,7 @@ export default {
   min-width: 0;
 }
 
-.flow-node__header-name {
+.action-node__header-name {
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -144,14 +251,14 @@ export default {
   min-width: 0;
 }
 
-.flow-node__header-buttons {
+.action-node__header-buttons {
   display: flex;
   gap: 4px;
   align-items: center;
   flex-shrink: 0;
 }
 
-.flow-node__delete-btn {
+.action-node__delete-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   border-radius: 6px;
@@ -164,13 +271,13 @@ export default {
   flex-shrink: 0;
 }
 
-.flow-node__delete-btn:hover {
+.action-node__delete-btn:hover {
   background: #ef5350;
   color: white;
   transform: scale(1.05);
 }
 
-.flow-node__header-input {
+.action-node__header-input {
   width: 100%;
   background: rgba(255, 255, 255, 0.95);
   border: none;
@@ -184,23 +291,23 @@ export default {
   box-sizing: border-box;
 }
 
-.flow-node__section {
+.action-node__section {
   padding: 12px 16px;
   border-bottom: 1px solid #e9ecef;
 }
 
-.flow-node__section:last-child {
+.action-node__section:last-child {
   border-bottom: none;
 }
 
-.flow-node__section-header {
+.action-node__section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
 
-.flow-node__section-title {
+.action-node__section-title {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -210,11 +317,11 @@ export default {
   color: #495057;
 }
 
-.flow-node__section-icon {
+.action-node__section-icon {
   font-size: 14px;
 }
 
-.flow-node__add-btn {
+.action-node__add-btn {
   width: 22px;
   height: 22px;
   background: #e8f5e9;
@@ -231,79 +338,37 @@ export default {
   flex-shrink: 0;
 }
 
-.flow-node__add-btn:hover {
+.action-node__add-btn:hover {
   background: #4caf50;
   color: white;
   transform: scale(1.05);
 }
 
-.flow-node__handles {
+/* Подпись снизу */
+.action-node__label {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  color: #4caf50;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 8px;
+  border-radius: 12px;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
   pointer-events: none;
-  z-index: 10;
+  z-index: 25;
 }
 
-.flow-node__handle {
-  pointer-events: auto;
-  position: absolute !important;
-  width: 14px !important;
-  height: 14px !important;
-  background: white !important;
-  border: 2px solid #4caf50 !important;
-  border-radius: 50% !important;
-  transition: all 0.2s ease !important;
-  cursor: crosshair !important;
-  z-index: 20 !important;
-}
-
-.flow-node__handle:hover {
-  transform: scale(1.5) !important;
-  background: #4caf50 !important;
-  border-color: white !important;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3) !important;
-}
-
-.flow-node__handle--top {
-  top: -7px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-}
-
-.flow-node__handle--top:hover {
-  transform: translateX(-50%) scale(1.5) !important;
-}
-
-.flow-node__handle--right {
-  right: -7px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-}
-
-.flow-node__handle--right:hover {
-  transform: translateY(-50%) scale(1.5) !important;
-}
-
-.flow-node__handle--bottom {
-  bottom: -7px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-}
-
-.flow-node__handle--bottom:hover {
-  transform: translateX(-50%) scale(1.5) !important;
-}
-
-.flow-node__handle--left {
-  left: -7px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-}
-
-.flow-node__handle--left:hover {
-  transform: translateY(-50%) scale(1.5) !important;
+.action-node:hover .action-node__label {
+  color: #2e7d32;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 </style>

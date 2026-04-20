@@ -56,6 +56,11 @@
       </div>
     </div>
 
+    <!-- Подпись снизу -->
+    <div class="condition-node__label">
+      <span>Condition</span>
+    </div>
+
     <!-- Кнопка удаления (появляется при наведении) -->
     <button class="condition-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
       &#x1F5D1;
@@ -209,6 +214,34 @@ export default {
 
 .condition-node__handle--left:hover {
   transform: translateY(-50%) scale(1.5) !important;
+}
+
+/* Подпись снизу */
+.condition-node__label {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  color: #4caf50;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 8px;
+  border-radius: 12px;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.condition-node:hover .condition-node__label {
+  color: #2e7d32;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Кнопка удаления */
