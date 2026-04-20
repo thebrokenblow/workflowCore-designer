@@ -59,7 +59,7 @@ export default {
 
   data() {
     return {
-      nameHeader: 'Новый шаг',
+      nameHeader: 'Название дейтсвия',
       nameNode: '"Блок действия"',
       isEditingNameHeader: false,
     }

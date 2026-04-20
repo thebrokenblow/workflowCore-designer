@@ -52,8 +52,12 @@ export default {
           name: 'Синхронизация',
           description: 'Синхронизация потоков - ожидание завершения всех веток',
         },
+        {
+          type: 'loopNode',
+          name: 'Цикл',
+          description: 'Повторение действий',
+        },
       ],
-      isCollapsed: false,
     }
   },
 

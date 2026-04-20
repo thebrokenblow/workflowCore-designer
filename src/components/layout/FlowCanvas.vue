@@ -29,6 +29,10 @@
         <SyncNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
       </template>
 
+      <template #node-loopNode="node">
+        <LoopNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
+      </template>
+
       <DropzoneBackground class="flow-canvas__background" />
     </VueFlow>
 
@@ -56,6 +60,7 @@ import ActionNode from '../nodes/ActionNode.vue'
 import ConditionNode from '../nodes/ConditionNode.vue'
 import ParallelSplitNode from '../nodes/ParallelSplitNode.vue'
 import SyncNode from '../nodes/SyncNode.vue'
+import LoopNode from '../nodes/LoopNode.vue'
 
 export default {
   name: 'FlowCanvas',
@@ -66,6 +71,7 @@ export default {
     ConditionNode,
     ParallelSplitNode,
     SyncNode,
+    LoopNode,
     ConfirmDeleteDialog,
   },
 
@@ -82,7 +88,7 @@ export default {
     confirmDeleteNode(id, nameBlock) {
       this.idDeletingNode = id
       this.dialogTitle = 'Подтверждение удаления'
-      this.dialogMessage = `Вы уверены, что хотите удалить блок ${nameBlock}?`
+      this.dialogMessage = `Вы уверены, что хотите удалить ${nameBlock}?`
 
       this.enabledConfirmDeleteDialog()
     },
