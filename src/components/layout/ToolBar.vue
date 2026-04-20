@@ -12,7 +12,7 @@
       </div>
 
       <div class="input-group">
-        <label>DataType (класс-хранилище):</label>
+        <label>Data Type (класс-хранилище):</label>
         <input
           type="text"
           v-model="formData.dataType"
@@ -21,20 +21,20 @@
       </div>
 
       <div class="input-group">
-        <label>ProjectName (название проекта):</label>
+        <label>Project Name (название проекта):</label>
         <input type="text" v-model="formData.projectName" placeholder="Пример: Workflow.Reports" />
       </div>
     </div>
 
-    <SaveJsonButton :form-data="formData" />
+    <SaveJsonButton />
   </div>
 </template>
 
 <script>
-import SaveJsonButton from './SaveJsonButton.vue'
+import SaveJsonButton from '../ui/toolBar/SaveJsonButton.vue'
 
 export default {
-  name: 'WorkflowToolbar',
+  name: 'ToolBar',
 
   components: {
     SaveJsonButton,
@@ -49,16 +49,7 @@ export default {
         projectName: 'Workflow.Reports',
       },
     }
-  },
-
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.$emit('update:data', newVal)
-      },
-      deep: true,
-    },
-  },
+  }
 }
 </script>
 

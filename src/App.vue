@@ -1,97 +1,47 @@
 <template>
   <div class="workflow-editor">
-    <MenuBlocks />
-    <div class="graph-container">
-      <ToolBar @clear="handleClear" @save="handleSave" @load="handleLoad" />
-      <CanvasComponent
-        ref="canvasRef"
-        :initial-edges="initialEdges"
-        @update:nodes="handleNodesUpdate"
-        @update:edges="handleEdgesUpdate"
-      />
+    <MenuBlocks class="workflow-editor__menu-blocks" />
+    <div class="workflow-editor__graph-container">
+      <ToolBar class="workflow-editor__toolbar" />
+      <FlowCanvas class="workflow-editor__canvas" />
     </div>
   </div>
 </template>
 
 <script>
-import CanvasComponent from './components/canvas/CanvasComponent.vue'
-import ToolBar from './components/toolbar/ToolBar.vue'
-import MenuBlocks from './components/toolbox/MenuBlocks.vue'
+import FlowCanvas from './components/layout/FlowCanvas.vue'
+import ToolBar from './components/layout/ToolBar.vue'
+import MenuBlocks from './components/layout/SideBar.vue'
 
 export default {
   name: 'App',
-
   components: {
-    CanvasComponent,
+    FlowCanvas,
     ToolBar,
     MenuBlocks,
-  },
-
-  data() {
-    return {
-      currentNodes: [],
-      currentEdges: [],
-    }
-  },
-
-  methods: {
-    handleNodesUpdate(nodes) {
-      this.currentNodes = nodes
-      console.log('Nodes updated:', nodes)
-    },
-
-    handleEdgesUpdate(edges) {
-      this.currentEdges = edges
-      console.log('Edges updated:', edges)
-    },
-
-    handleClear() {
-      if (confirm('Очистить весь холст? Все несохраненные данные будут потеряны.')) {
-        this.$refs.canvasRef.clearCanvas()
-      }
-    },
-
-    handleSave() {
-      const nodes = this.$refs.canvasRef.getNodes()
-      const edges = this.$refs.canvasRef.getEdges()
-
-      const workflowData = {
-        nodes: nodes,
-        edges: edges,
-        savedAt: new Date().toISOString(),
-      }
-
-      localStorage.setItem('workflowData', JSON.stringify(workflowData))
-      alert('Рабочий процесс сохранен!')
-      console.log('Saved workflow:', workflowData)
-    },
-
-    handleLoad() {
-      const savedData = localStorage.getItem('workflowData')
-      if (savedData) {
-        const workflowData = JSON.parse(savedData)
-        this.$refs.canvasRef.loadWorkflow(workflowData.nodes, workflowData.edges)
-        alert('Рабочий процесс загружен!')
-      } else {
-        alert('Нет сохраненных данных')
-      }
-    },
   },
 }
 </script>
 
 <style scoped>
+/* Блок */
 .workflow-editor {
   display: flex;
   height: 100%;
-  gap: 20px;
-  padding: 20px;
+  gap: 10px;
+  padding: 10px;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   overflow: hidden;
   box-sizing: border-box;
 }
 
-.graph-container {
+/* Элемент: панель с блоками (MenuBlocks) */
+.workflow-editor__menu-blocks {
+  flex-shrink: 0;
+}
+
+/* Элемент: контейнер для графа */
+.workflow-editor__graph-container {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -100,6 +50,25 @@ export default {
   min-height: 0;
 }
 
+/* Элемент: тулбар */
+.workflow-editor__toolbar {
+  flex-shrink: 0;
+}
+
+/* Элемент: канвас */
+.workflow-editor__canvas {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* Глубокие стили для VueFlow */
+.workflow-editor__canvas :deep(.vue-flow) {
+  width: 100%;
+  height: 100%;
+}
+
+/* Адаптивность */
 @media (max-width: 768px) {
   .workflow-editor {
     flex-direction: column;

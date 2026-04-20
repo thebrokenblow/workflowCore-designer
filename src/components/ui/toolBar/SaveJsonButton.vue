@@ -1,6 +1,5 @@
 <template>
   <button class="save-json-button">
-    <span class="save-json-button__icon">📄</span>
     <span class="save-json-button__text">Сохранить Workflow JSON</span>
   </button>
 </template>
@@ -40,12 +39,6 @@ export default {
   white-space: nowrap;
 }
 
-/* Элемент: иконка кнопки */
-.save-json-button__icon {
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
 /* Hover состояние кнопки */
 .save-json-button:hover {
   transform: translateY(-2px);
@@ -73,10 +66,6 @@ export default {
   font-size: 12px;
 }
 
-.save-json-button--small .save-json-button__icon {
-  font-size: 14px;
-}
-
 /* Модификатор: отключенная кнопка */
 .save-json-button--disabled {
   opacity: 0.6;
@@ -95,10 +84,6 @@ export default {
   .save-json-button__text {
     white-space: normal;
     word-break: keep-all;
-  }
-
-  .save-json-button__icon {
-    font-size: 14px;
   }
 }
 
