@@ -29,7 +29,7 @@ export default {
       type: String,
       required: false,
       default: '',
-    }
+    },
   },
 }
 </script>
@@ -42,7 +42,7 @@ export default {
   --block-menu-border: #e0e0e0;
   --block-menu-bg-start: #ffffff;
   --block-menu-bg-end: #f9f9f9;
-  
+
   display: flex;
   align-items: center;
   gap: 12px;
@@ -64,7 +64,12 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(var(--block-menu-primary-rgb), 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--block-menu-primary-rgb), 0.1),
+    transparent
+  );
   transition: left 0.5s ease;
   pointer-events: none;
 }
@@ -124,7 +129,6 @@ export default {
   color: var(--block-menu-primary);
 }
 
-
 /* Элемент: описание */
 .block-menu__description {
   font-size: 11px;
@@ -171,19 +175,19 @@ export default {
     padding: 12px;
     gap: 8px;
   }
-  
+
   .block-menu__name {
     font-size: 14px;
   }
-  
+
   .block-menu__icon {
     font-size: 16px;
   }
-  
+
   .block-menu__description {
     font-size: 10px;
   }
-  
+
   .block-menu__drag-handle {
     font-size: 18px;
   }

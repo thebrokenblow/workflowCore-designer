@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import SideBarNode from '../ui/SideBar/SideBarNode.vue'
+import SideBarNode from '../ui/sideBar/SideBarNode.vue'
 import useDragAndDrop from '../../composables/useDnD.js'
 
 export default {
@@ -32,12 +32,28 @@ export default {
   data() {
     return {
       nodes: [
-        { type: 'actionNode', name: 'Действие', description: 'Базовый блок действия для выполнения операций' },
-        { type: 'conditionNode', name: 'Условие', description: 'Блок условия (ромб) - ветвление логики' },
-        { type: 'parallelSplitNode', name: 'Параллельно разделение', description: 'Параллельное разделение - запуск нескольких веток одновременно' },
-        { type: 'syncNode', name: 'Синхронизация', description: 'Синхронизация потоков - ожидание завершения всех веток' }
+        {
+          type: 'actionNode',
+          name: 'Действие',
+          description: 'Базовый блок действия для выполнения операций',
+        },
+        {
+          type: 'conditionNode',
+          name: 'Условие',
+          description: 'Блок условия (ромб) - ветвление логики',
+        },
+        {
+          type: 'parallelSplitNode',
+          name: 'Параллельно разделение',
+          description: 'Параллельное разделение - запуск нескольких веток одновременно',
+        },
+        {
+          type: 'syncNode',
+          name: 'Синхронизация',
+          description: 'Синхронизация потоков - ожидание завершения всех веток',
+        },
       ],
-      isCollapsed: false
+      isCollapsed: false,
     }
   },
 
@@ -53,7 +69,7 @@ export default {
 .toolbox {
   --toolbox-primary-color: #4caf50;
   --toolbox-primary-dark: #45a049;
-  
+
   width: 300px;
   background: var(--toolbox-bg, white);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -89,7 +105,11 @@ export default {
 
 /* Элемент: хедер */
 .toolbox__header {
-  background: linear-gradient(135deg, var(--toolbox-primary-color) 0%, var(--toolbox-primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--toolbox-primary-color) 0%,
+    var(--toolbox-primary-dark) 100%
+  );
   padding: 20px;
   text-align: center;
   position: relative;
@@ -122,7 +142,7 @@ export default {
     width: 100%;
     max-height: 300px;
   }
-  
+
   .toolbox__content {
     max-height: 200px;
     overflow-y: auto;

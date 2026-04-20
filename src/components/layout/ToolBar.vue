@@ -49,7 +49,7 @@ export default {
         projectName: 'Workflow.Reports',
       },
     }
-  }
+  },
 }
 </script>
 

@@ -1,11 +1,6 @@
 <template>
   <div class="dropzone-background">
-    <Background 
-      class="dropzone-background__canvas"
-      :size="2" 
-      :gap="20" 
-      pattern-color="#BDBDBD" 
-    />
+    <Background class="dropzone-background__canvas" :size="2" :gap="20" pattern-color="#BDBDBD" />
   </div>
 </template>
 
@@ -15,8 +10,8 @@ import { Background } from '@vue-flow/background'
 export default {
   name: 'DropzoneBackground',
   components: {
-    Background
-  }
+    Background,
+  },
 }
 </script>
 

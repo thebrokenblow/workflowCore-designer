@@ -11,14 +11,14 @@
     :style="edgeStyle"
     :marker-end="markerEndUrl"
   />
-  
+
   <!-- Добавляем текстовое поле -->
   <EdgeLabelRenderer>
     <div
       :style="{
         transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
         position: 'absolute',
-        pointerEvents: 'all'
+        pointerEvents: 'all',
       }"
       class="nodrag nopan custom-edge__label-container"
     >
@@ -30,7 +30,7 @@
       />
     </div>
   </EdgeLabelRenderer>
-  
+
   <!-- Определяем маркер стрелки (уменьшенный) -->
   <defs>
     <marker
@@ -42,10 +42,7 @@
       markerHeight="0.5"
       orient="auto"
     >
-      <path
-        d="M 0 0 L 10 5 L 0 10 z"
-        :fill="edgeStyle.stroke"
-      />
+      <path d="M 0 0 L 10 5 L 0 10 z" :fill="edgeStyle.stroke" />
     </marker>
   </defs>
 </template>
@@ -123,7 +120,7 @@ export default {
   background: white;
   border-radius: 4px;
   padding: 4px 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 10;
 }
 

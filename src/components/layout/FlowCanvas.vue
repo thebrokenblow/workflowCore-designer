@@ -1,20 +1,20 @@
 <template>
   <div class="flow-canvas">
-    <VueFlow 
+    <VueFlow
       class="flow-canvas__container"
       v-model:nodes="nodes"
       v-model:edges="edges"
       :edge-types="edgeTypes"
       :connection-line-options="connectionLineOptions"
       :default-edge-options="defaultEdgeOptions"
-      @dragover="onDragOver" 
+      @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
       @connect="onConnect"
       @edge-update="onEdgeUpdate"
     >
-      <template #node-actionNode>
-        <ActionNode />
+      <template #node-actionNode="node">
+        <ActionNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
       </template>
 
       <template #node-conditionNode>
@@ -31,6 +31,14 @@
 
       <DropzoneBackground class="flow-canvas__background" />
     </VueFlow>
+
+    <ConfirmDeleteDialog
+      :visible="dialogVisible"
+      :title="dialogTitle"
+      :message="dialogMessage"
+      @confirm="deleteNode"
+      @cancel="cancelDeleteNode"
+    />
   </div>
 </template>
 
@@ -38,7 +46,9 @@
 import { ref } from 'vue'
 import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core'
 import DropzoneBackground from '../ui/flowCanvas/DropzoneBackground.vue'
-import useDragAndDrop from '../../composables/useDnD'
+import useDragAndDrop from '../../composables/useDnD.js'
+
+import ConfirmDeleteDialog from '../ui/flowCanvas/ConfirmDeleteDialog.vue'
 
 import CustomEdge from '../edges/CustomEdge.vue'
 
@@ -56,6 +66,52 @@ export default {
     ConditionNode,
     ParallelSplitNode,
     SyncNode,
+    ConfirmDeleteDialog,
+  },
+
+  data() {
+    return {
+      dialogVisible: false,
+      dialogTitle: '',
+      dialogMessage: '',
+      deletingNode: null,
+    }
+  },
+
+  methods: {
+    confirmDeleteNode(id, nameBlock) {
+      this.deletingNode = id
+      this.dialogTitle = 'Подтверждение удаления'
+      this.dialogMessage = `Вы уверены, что хотите удалить блок ${nameBlock}?`
+
+      this.enabledConfirmDeleteDialog()
+    },
+
+    deleteNode() {
+      this.edges = this.edges.filter(
+        (edge) => edge.source === this.deletingNode || edge.target === this.deletingNode
+      )
+      this.nodes = this.nodes.filter((node) => node.id !== this.deletingNode)
+
+      this.closeDeleteDialog()
+    },
+    cancelDeleteNode() {
+      this.closeDeleteDialog()
+    },
+
+    closeDeleteDialog() {
+      this.disabledConfirmDeleteDialog()
+      this.deletingNode = null
+      this.dialogTitle = ''
+      this.dialogMessage = ''
+    },
+
+    enabledConfirmDeleteDialog() {
+      this.dialogVisible = true
+    },
+    disabledConfirmDeleteDialog() {
+      this.dialogVisible = false
+    },
   },
 
   setup() {
@@ -78,7 +134,7 @@ export default {
         width: 20,
         height: 20,
         color: '#4caf50',
-        orient: 'auto'
+        orient: 'auto',
       },
     }
 
@@ -93,7 +149,7 @@ export default {
         width: 20,
         height: 20,
         color: '#4caf50',
-        orient: 'auto'
+        orient: 'auto',
       },
     }
 
@@ -114,10 +170,10 @@ export default {
           width: 20,
           height: 20,
           color: '#4caf50',
-          orient: 'auto'
-        }
+          orient: 'auto',
+        },
       }
-      
+
       addEdges([newEdge])
     }
 
@@ -137,7 +193,7 @@ export default {
           width: 20,
           height: 20,
           color: '#4caf50',
-          orient: 'auto'
+          orient: 'auto',
         },
       }
       updateEdge(oldEdge.id, updatedEdge)
@@ -154,9 +210,9 @@ export default {
       onDrop,
       onConnect,
       onEdgeUpdate,
-      MarkerType
+      MarkerType,
     }
-  }
+  },
 }
 </script>
 

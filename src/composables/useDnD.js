@@ -6,8 +6,8 @@ let id = 0
 /**
  * @returns {string} - A unique id.
  */
-function getId() {
-  return `dndnode_${id++}`
+function getId(draggedType) {
+  return `${draggedType}_${id++}`
 }
 
 /**
@@ -30,12 +30,11 @@ export default function useDragAndDrop() {
 
   watch(isDragging, (dragging) => {
     if (dragging) {
-        document.body.style.userSelect = 'none'
+      document.body.style.userSelect = 'none'
     } else {
-        document.body.style.userSelect = ''
+      document.body.style.userSelect = ''
     }
-
-})
+  })
 
   function onDragStart(event, type) {
     if (event.dataTransfer) {
@@ -88,13 +87,12 @@ export default function useDragAndDrop() {
       y: event.clientY,
     })
 
-    const nodeId = getId()
+    const nodeId = getId(draggedType.value)
 
     const newNode = {
       id: nodeId,
       type: draggedType.value,
       position,
-      data: { label: nodeId },
     }
 
     /**
@@ -104,13 +102,15 @@ export default function useDragAndDrop() {
      */
     const { off } = onNodesInitialized(() => {
       updateNode(nodeId, (node) => ({
-        position: { x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2 },
+        position: {
+          x: node.position.x - node.dimensions.width / 2,
+          y: node.position.y - node.dimensions.height / 2,
+        },
       }))
 
       off()
     })
 
-    
     addNodes(newNode)
   }
 
