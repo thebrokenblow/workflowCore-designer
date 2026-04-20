@@ -16,7 +16,7 @@
             {{ nameHeader }}
           </span>
           <div class="flow-node__header-buttons">
-            <button class="flow-node__delete-btn" title="Удалить блок" @click.stop="confirmDelete">
+            <button class="flow-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
               &#x1F5D1;
             </button>
           </div>
@@ -50,30 +50,27 @@
 <script>
 export default {
   name: 'ActionNode',
+
   props: {
     id: { type: String, required: true },
   },
 
+  emits: ['confirmDeleteNode'],
+
   data() {
     return {
       nameHeader: 'Новый шаг',
-      nameBlock: '"Блок действия"',
+      nameNode: '"Блок действия"',
       isEditingNameHeader: false,
     }
   },
   methods: {
-    enableHeaderEditing() {
-      console.log('enableHeaderEditing')
+    enableHeaderEditing() {},
+    deleteNode() {
+      this.$emit('confirmDeleteNode', this.id, this.nameNode)
     },
-    confirmDelete() {
-      this.$emit('confirmDeleteNode', this.id, this.nameBlock)
-    },
-    addInput() {
-      console.log('addInput')
-    },
-    addOutput() {
-      console.log('addOutput')
-    },
+    addInput() {},
+    addOutput() {},
   },
 }
 </script>

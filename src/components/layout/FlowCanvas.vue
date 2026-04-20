@@ -17,16 +17,16 @@
         <ActionNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
       </template>
 
-      <template #node-conditionNode>
-        <ConditionNode />
+      <template #node-conditionNode="node">
+        <ConditionNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
       </template>
 
-      <template #node-parallelSplitNode>
-        <ParallelSplitNode />
+      <template #node-parallelSplitNode="node">
+        <ParallelSplitNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
       </template>
 
-      <template #node-syncNode>
-        <SyncNode />
+      <template #node-syncNode="node">
+        <SyncNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
       </template>
 
       <DropzoneBackground class="flow-canvas__background" />
@@ -74,13 +74,13 @@ export default {
       dialogVisible: false,
       dialogTitle: '',
       dialogMessage: '',
-      deletingNode: null,
+      idDeletingNode: null,
     }
   },
 
   methods: {
     confirmDeleteNode(id, nameBlock) {
-      this.deletingNode = id
+      this.idDeletingNode = id
       this.dialogTitle = 'Подтверждение удаления'
       this.dialogMessage = `Вы уверены, что хотите удалить блок ${nameBlock}?`
 
@@ -89,9 +89,9 @@ export default {
 
     deleteNode() {
       this.edges = this.edges.filter(
-        (edge) => edge.source === this.deletingNode || edge.target === this.deletingNode
+        (edge) => edge.source !== this.idDeletingNode || edge.target !== this.idDeletingNode
       )
-      this.nodes = this.nodes.filter((node) => node.id !== this.deletingNode)
+      this.nodes = this.nodes.filter((node) => node.id !== this.idDeletingNode)
 
       this.closeDeleteDialog()
     },
