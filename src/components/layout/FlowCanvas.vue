@@ -6,12 +6,10 @@
       v-model:edges="edges"
       :edge-types="edgeTypes"
       :connection-line-options="connectionLineOptions"
-      :default-edge-options="defaultEdgeOptions"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
       @connect="onConnect"
-      @edge-update="onEdgeUpdate"
     >
       <template #node-actionNode="node">
         <ActionNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
@@ -47,20 +45,21 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, markRaw } from 'vue'
 import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core'
 import DropzoneBackground from '../ui/flowCanvas/DropzoneBackground.vue'
 import useDragAndDrop from '../../composables/useDnD.js'
 
 import ConfirmDeleteDialog from '../ui/flowCanvas/ConfirmDeleteDialog.vue'
 
-import CustomEdge from '../edges/CustomEdge.vue'
-
 import ActionNode from '../nodes/ActionNode.vue'
 import ConditionNode from '../nodes/ConditionNode.vue'
 import ParallelSplitNode from '../nodes/ParallelSplitNode.vue'
 import SyncNode from '../nodes/SyncNode.vue'
 import LoopNode from '../nodes/LoopNode.vue'
+
+import BaseEdge from '../edges/BaseEdge.vue'
+import CustomEdge from '../edges/CustomEdge.vue'
 
 export default {
   name: 'FlowCanvas',
@@ -95,7 +94,7 @@ export default {
 
     deleteNode() {
       this.edges = this.edges.filter(
-        (edge) => edge.source !== this.idDeletingNode || edge.target !== this.idDeletingNode
+        (edge) => edge.source !== this.idDeletingNode && edge.target !== this.idDeletingNode
       )
       this.nodes = this.nodes.filter((node) => node.id !== this.idDeletingNode)
 
@@ -123,58 +122,45 @@ export default {
   setup() {
     const nodes = ref([])
     const edges = ref([])
-    const { addEdges, updateEdge, findEdge } = useVueFlow()
+    const { addEdges } = useVueFlow()
     const { onDragOver, onDragLeave, onDrop } = useDragAndDrop()
 
     const edgeTypes = {
-      custom: CustomEdge,
+      base: markRaw(BaseEdge),
+      custom: markRaw(CustomEdge),
     }
 
     const connectionLineOptions = {
+      type: 'step',
       style: {
         stroke: '#4caf50',
         strokeWidth: 2,
       },
       markerEnd: {
         type: MarkerType.ArrowClosed,
-        width: 20,
-        height: 20,
-        color: '#4caf50',
-        orient: 'auto',
-      },
-    }
-
-    const defaultEdgeOptions = {
-      type: 'custom',
-      style: {
-        stroke: '#4caf50',
-        strokeWidth: 2,
-      },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        width: 20,
-        height: 20,
+        width: 15,
+        height: 15,
         color: '#4caf50',
         orient: 'auto',
       },
     }
 
     const onConnect = (connection) => {
+      const sourceNode = connection.source.split('_')[0]
+
+      let typeEdge = 'base'
+      if (sourceNode === 'conditionNode') {
+        typeEdge = 'custom'
+      }
+
       const newEdge = {
         id: `edge_${Date.now()}_${Math.random()}`,
         ...connection,
-        type: 'custom',
-        data: {
-          text: '',
-        },
-        style: {
-          stroke: '#4caf50',
-          strokeWidth: 2,
-        },
+        type: typeEdge,
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          width: 20,
-          height: 20,
+          width: 15,
+          height: 15,
           color: '#4caf50',
           orient: 'auto',
         },
@@ -183,39 +169,15 @@ export default {
       addEdges([newEdge])
     }
 
-    const onEdgeUpdate = (oldEdge, newConnection) => {
-      const existingEdge = findEdge(oldEdge.id)
-      const updatedEdge = {
-        ...newConnection,
-        id: oldEdge.id,
-        type: 'custom',
-        data: existingEdge?.data || { text: '' },
-        style: oldEdge.style || {
-          stroke: '#4caf50',
-          strokeWidth: 2,
-        },
-        markerEnd: oldEdge.markerEnd || {
-          type: MarkerType.ArrowClosed,
-          width: 20,
-          height: 20,
-          color: '#4caf50',
-          orient: 'auto',
-        },
-      }
-      updateEdge(oldEdge.id, updatedEdge)
-    }
-
     return {
       nodes,
       edges,
       edgeTypes,
       connectionLineOptions,
-      defaultEdgeOptions,
       onDragOver,
       onDragLeave,
       onDrop,
       onConnect,
-      onEdgeUpdate,
       MarkerType,
     }
   },
@@ -247,52 +209,9 @@ export default {
   z-index: 1;
 }
 
-.flow-canvas__container :deep(.vue-flow__edge) {
-  cursor: pointer;
-  z-index: 1;
-}
-
-.flow-canvas__container :deep(.vue-flow__edge-path) {
-  stroke: #4caf50;
-  stroke-width: 2;
-}
-
-.flow-canvas__container :deep(.vue-flow__edge.selected .vue-flow__edge-path) {
-  stroke: #4caf50;
-  stroke-width: 3;
-}
-
-.flow-canvas__container :deep(.vue-flow__connection-path) {
-  stroke: #4caf50 !important;
-  stroke-width: 2px !important;
-}
-
-/* Дополнительные стили для стрелок */
-.flow-canvas__container :deep(.vue-flow__edge-path) {
-  marker-end: url(#arrow-closed);
-}
-
-/* Анимация при наведении на ребро */
-.flow-canvas__container :deep(.vue-flow__edge:hover .vue-flow__edge-path) {
-  stroke-width: 3;
-  stroke: #2e7d32;
-}
-
 @media (max-width: 768px) {
   .flow-canvas__container {
     border-radius: 0;
   }
-}
-</style>
-
-<style>
-/* Глобальные стили для маркеров стрелок */
-.vue-flow__edge {
-  marker-end: url(#arrow-closed);
-}
-
-/* Убеждаемся, что стрелка рисуется в правильном направлении */
-.vue-flow__edge-path {
-  marker-end: url(#arrow-closed);
 }
 </style>

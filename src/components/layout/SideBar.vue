@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbox" :class="toolboxModifiers">
+  <div class="toolbox">
     <div class="toolbox__header">
       <h3 class="toolbox__title">Блоки</h3>
     </div>

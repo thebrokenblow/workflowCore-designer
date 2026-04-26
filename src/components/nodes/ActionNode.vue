@@ -45,15 +45,10 @@
           <span class="action-node__header-name" :title="nameHeader">
             {{ nameHeader }}
           </span>
-          <div class="action-node__header-buttons">
-            <button class="action-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
-              &#x1F5D1;
-            </button>
-          </div>
         </div>
       </div>
 
-      <!-- Входные параметры и Выходные параметры -->
+      <!-- Входные параметры -->
       <div class="action-node__section">
         <div class="action-node__section-header">
           <div class="action-node__section-title">
@@ -62,8 +57,36 @@
           </div>
           <button class="action-node__add-btn" @click.stop="addInput">+</button>
         </div>
+        <div class="action-node__params-list">
+          <div
+            v-for="(inputParam, index) in inputsList"
+            :key="inputParam.id"
+            class="action-node__param-row"
+          >
+            <input
+              type="text"
+              class="action-node__param-variable-name"
+              placeholder="название переменной"
+              v-model="inputParam.variableName"
+            />
+            <span class="action-node__param-colon">:</span>
+            <input
+              type="text"
+              class="action-node__param-value"
+              placeholder="значение"
+              v-model="inputParam.value"
+            />
+            <button class="action-node__remove-param-btn" @click.stop="deleteInput(index)">
+              ×
+            </button>
+          </div>
+          <div v-if="inputsList.length === 0" class="action-node__empty-params">
+            Нет входных параметров
+          </div>
+        </div>
       </div>
 
+      <!-- Выходные параметры -->
       <div class="action-node__section">
         <div class="action-node__section-header">
           <div class="action-node__section-title">
@@ -72,6 +95,33 @@
           </div>
           <button class="action-node__add-btn" @click.stop="addOutput">+</button>
         </div>
+        <div class="action-node__params-list">
+          <div
+            v-for="(outputParam, index) in outputsList"
+            :key="outputParam.id"
+            class="action-node__param-row"
+          >
+            <input
+              type="text"
+              class="action-node__param-variable-name"
+              placeholder="название переменной"
+              v-model="outputParam.variableName"
+            />
+            <span class="action-node__param-colon">:</span>
+            <input
+              type="text"
+              class="action-node__param-value"
+              placeholder="значение"
+              v-model="outputParam.value"
+            />
+            <button class="action-node__remove-param-btn" @click.stop="deleteOutput(index)">
+              ×
+            </button>
+          </div>
+          <div v-if="outputsList.length === 0" class="action-node__empty-params">
+            Нет выходных параметров
+          </div>
+        </div>
       </div>
     </div>
 
@@ -79,6 +129,11 @@
     <div class="action-node__label">
       <span>Action</span>
     </div>
+
+    <!-- Кнопка удаления (появляется при наведении) -->
+    <button class="action-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
+      &#x1F5D1;
+    </button>
   </div>
 </template>
 
@@ -102,27 +157,46 @@ export default {
       nameNode: '"Блок действия"',
       isEditingNameHeader: false,
       Position: Position,
+      nextInputId: 0,
+      nextOutputId: 0,
+      inputsList: [],
+      outputsList: [],
     }
   },
 
   methods: {
     enableHeaderEditing() {
       this.isEditingNameHeader = true
-      this.$nextTick(() => {
-        const input = this.$el.querySelector('.action-node__header-input')
-        if (input) input.focus()
-      })
     },
     deleteNode() {
       this.$emit('confirmDeleteNode', this.id, this.nameNode)
     },
-    addInput() {},
-    addOutput() {},
+    addInput() {
+      this.inputsList.push({
+        id: this.nextInputId++,
+        variableName: '',
+        value: '',
+      })
+    },
+    deleteInput(index) {
+      this.inputsList.splice(index, 1)
+    },
+    addOutput() {
+      this.outputsList.push({
+        id: this.nextOutputId++,
+        variableName: '',
+        value: '',
+      })
+    },
+    deleteOutput(index) {
+      this.outputsList.splice(index, 1)
+    },
   },
 }
 </script>
 
 <style scoped>
+/* Базовый блок */
 .action-node {
   position: relative;
   display: inline-block;
@@ -143,6 +217,7 @@ export default {
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
+/* Элементы блока */
 .action-node__content {
   background: white;
   border-radius: 14px;
@@ -184,6 +259,7 @@ export default {
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3) !important;
 }
 
+/* Модификаторы handle */
 .action-node__handle--top {
   top: -7px !important;
   left: 50% !important;
@@ -224,6 +300,7 @@ export default {
   transform: translateY(-50%) scale(1.5) !important;
 }
 
+/* Шапка */
 .action-node__header {
   background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   padding: 12px 16px;
@@ -251,32 +328,6 @@ export default {
   min-width: 0;
 }
 
-.action-node__header-buttons {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.action-node__delete-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 4px 8px;
-  transition: all 0.2s;
-  backdrop-filter: blur(2px);
-  flex-shrink: 0;
-}
-
-.action-node__delete-btn:hover {
-  background: #ef5350;
-  color: white;
-  transform: scale(1.05);
-}
-
 .action-node__header-input {
   width: 100%;
   background: rgba(255, 255, 255, 0.95);
@@ -291,6 +342,7 @@ export default {
   box-sizing: border-box;
 }
 
+/* Секции */
 .action-node__section {
   padding: 12px 16px;
   border-bottom: 1px solid #e9ecef;
@@ -321,6 +373,7 @@ export default {
   font-size: 14px;
 }
 
+/* Кнопки */
 .action-node__add-btn {
   width: 22px;
   height: 22px;
@@ -342,6 +395,108 @@ export default {
   background: #4caf50;
   color: white;
   transform: scale(1.05);
+}
+
+/* Список параметров */
+.action-node__params-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Строка параметра */
+.action-node__param-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.action-node__param-row:hover {
+  background: #f1f3f5;
+}
+
+/* Поле ввода названия переменной */
+.action-node__param-variable-name {
+  flex: 1;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: 'Segoe UI', monospace;
+  outline: none;
+  transition: all 0.2s;
+  min-width: 0;
+}
+
+.action-node__param-variable-name:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+/* Двоеточие */
+.action-node__param-colon {
+  color: #adb5bd;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Поле ввода значения */
+.action-node__param-value {
+  flex: 1;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: 'Segoe UI', monospace;
+  outline: none;
+  transition: all 0.2s;
+  min-width: 0;
+}
+
+.action-node__param-value:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+/* Кнопка удаления параметра */
+.action-node__remove-param-btn {
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #adb5bd;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.action-node__remove-param-btn:hover {
+  background: #ef5350;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Пустой список параметров */
+.action-node__empty-params {
+  text-align: center;
+  color: #adb5bd;
+  font-size: 11px;
+  font-style: italic;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 /* Подпись снизу */
@@ -370,5 +525,36 @@ export default {
   color: #2e7d32;
   background: white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Кнопка удаления блока */
+.action-node__delete-btn {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  z-index: 30;
+}
+
+.action-node:hover .action-node__delete-btn {
+  opacity: 1;
+}
+
+.action-node__delete-btn:hover {
+  background: #ef5350;
+  transform: scale(1.1);
 }
 </style>

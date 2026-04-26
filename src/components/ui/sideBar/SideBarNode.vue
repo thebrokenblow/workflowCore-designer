@@ -1,5 +1,5 @@
 <template>
-  <div class="block-menu" :class="blockMenuModifiers">
+  <div class="block-menu">
     <div class="block-menu__info">
       <div class="block-menu__name">
         {{ name }}
