@@ -82,7 +82,7 @@ export default {
     },
   },
 
-  emits: ['confirmDeleteNode'],
+  emits: ['confirmDeleteNode', 'conditionChange'],
 
   data() {
     return {
@@ -97,6 +97,7 @@ export default {
     const editingNameHeader = useTemplateRef('editingCondition')
     onClickOutside(editingNameHeader, () => {
       if (this.isEditingCondition) {
+        this.$emit('conditionChange', this.id, this.condition)
         this.isEditingCondition = false
       }
     })

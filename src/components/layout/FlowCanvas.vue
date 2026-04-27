@@ -12,7 +12,12 @@
       @connect="onConnect"
     >
       <template #node-actionNode="node">
-        <ActionNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
+        <ActionNode
+          v-bind="node"
+          @inputs-list-change="inputsListChange"
+          @outputs-list-change="outputsListChange"
+          @confirm-delete-node="confirmDeleteNode"
+        />
       </template>
 
       <template #node-conditionNode="node">
@@ -28,7 +33,20 @@
       </template>
 
       <template #node-loopNode="node">
-        <LoopNode v-bind="node" @confirm-delete-node="confirmDeleteNode" />
+        <LoopNode
+          v-bind="node"
+          @condition-change="conditionChange"
+          @confirm-delete-node="confirmDeleteNode"
+        />
+      </template>
+
+      <template #edge-custom="edge">
+        <LabeledEdge v-bind="edge" @input-value-change="handleEdgeInputChange" />
+      </template>
+
+      <!-- ДОБАВЛЕНО: Шаблон для base ребер -->
+      <template #edge-base="edge">
+        <BaseEdge v-bind="edge" />
       </template>
 
       <DropzoneBackground class="flow-canvas__background" />
@@ -59,7 +77,7 @@ import SyncNode from '../nodes/SyncNode.vue'
 import LoopNode from '../nodes/LoopNode.vue'
 
 import BaseEdge from '../edges/BaseEdge.vue'
-import CustomEdge from '../edges/CustomEdge.vue'
+import LabeledEdge from '../edges/LabeledEdge.vue'
 
 export default {
   name: 'FlowCanvas',
@@ -72,6 +90,8 @@ export default {
     SyncNode,
     LoopNode,
     ConfirmDeleteDialog,
+    BaseEdge,
+    LabeledEdge,
   },
 
   data() {
@@ -84,12 +104,45 @@ export default {
   },
 
   methods: {
+    getWorkflowData() {
+      return {
+        nodes: this.nodes,
+        edges: this.edges,
+      }
+    },
+
+    handleEdgeInputChange(id, text) {
+      const edge = this.edges.find((edge) => edge.id === id)
+      edge.data.text = text
+    },
+
+    inputsListChange(id, inputsList) {
+      const actionNode = this.nodes.find((node) => node.id === id)
+      if (actionNode) {
+        actionNode.inputsList = inputsList
+      }
+    },
+
+    outputsListChange(id, outputsList) {
+      const actionNode = this.nodes.find((node) => node.id === id)
+      if (actionNode) {
+        actionNode.outputsList = outputsList
+      }
+    },
+
     confirmDeleteNode(id, nameBlock) {
       this.idDeletingNode = id
       this.dialogTitle = 'Подтверждение удаления'
       this.dialogMessage = `Вы уверены, что хотите удалить ${nameBlock}?`
 
       this.enabledConfirmDeleteDialog()
+    },
+
+    loopNode(id, condition) {
+      const loopNode = this.nodes.find((node) => node.id === id)
+      if (loopNode) {
+        loopNode.condition = condition
+      }
     },
 
     deleteNode() {
@@ -99,9 +152,6 @@ export default {
       this.nodes = this.nodes.filter((node) => node.id !== this.idDeletingNode)
 
       this.closeDeleteDialog()
-
-      console.log(this.edges)
-      console.log(this.nodes)
     },
     cancelDeleteNode() {
       this.closeDeleteDialog()
@@ -130,7 +180,7 @@ export default {
 
     const edgeTypes = {
       base: markRaw(BaseEdge),
-      custom: markRaw(CustomEdge),
+      custom: markRaw(LabeledEdge),
     }
 
     const connectionLineOptions = {
@@ -151,22 +201,35 @@ export default {
     const onConnect = (connection) => {
       const sourceNode = connection.source.split('_')[0]
 
-      let typeEdge = 'base'
+      // eslint-disable-next-line no-useless-assignment
+      let newEdge = {}
       if (sourceNode === 'conditionNode') {
-        typeEdge = 'custom'
-      }
-
-      const newEdge = {
-        id: `edge_${Date.now()}_${Math.random()}`,
-        ...connection,
-        type: typeEdge,
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          width: 15,
-          height: 15,
-          color: '#4caf50',
-          orient: 'auto',
-        },
+        newEdge = {
+          id: `edge_${Date.now()}_${Math.random()}`,
+          ...connection,
+          type: 'custom',
+          data: { text: '' },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            width: 15,
+            height: 15,
+            color: '#4caf50',
+            orient: 'auto',
+          },
+        }
+      } else {
+        newEdge = {
+          id: `edge_${Date.now()}_${Math.random()}`,
+          ...connection,
+          type: 'base',
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            width: 15,
+            height: 15,
+            color: '#4caf50',
+            orient: 'auto',
+          },
+        }
       }
 
       addEdges([newEdge])

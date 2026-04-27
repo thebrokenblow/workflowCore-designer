@@ -3,7 +3,7 @@
     <MenuBlocks class="workflow-editor__menu-blocks" />
     <div class="workflow-editor__graph-container">
       <ToolBar @save-scheme="saveScheme" class="workflow-editor__toolbar" />
-      <FlowCanvas class="workflow-editor__canvas" />
+      <FlowCanvas ref="flowCanvas" class="workflow-editor__canvas" />
     </div>
   </div>
 </template>
@@ -24,7 +24,9 @@ export default {
 
   methods: {
     saveScheme() {
-      console.log('saveScheme 1')
+      const workflowData = this.$refs.flowCanvas.getWorkflowData()
+      console.log(workflowData.nodes)
+      console.log(workflowData.edges)
     },
   },
 }

@@ -142,13 +142,9 @@ export default {
 
   props: {
     id: { type: String, required: true, default: () => '' },
-    data: {
-      type: Object,
-      default: () => ({}),
-    },
   },
 
-  emits: ['confirmDeleteNode'],
+  emits: ['confirmDeleteNode', 'inputsListChange', 'outputsListChange'],
 
   data() {
     return {
@@ -161,6 +157,21 @@ export default {
       inputsList: [],
       outputsList: [],
     }
+  },
+
+  watch: {
+    inputsList: {
+      handler(newinputsList) {
+        this.$emit('inputsListChange', this.id, newinputsList)
+      },
+      deep: true,
+    },
+    outputsList: {
+      handler(newOutputsList) {
+        this.$emit('outputsListChange', this.id, newOutputsList)
+      },
+      deep: true,
+    },
   },
 
   mounted() {

@@ -56,10 +56,10 @@ const path = computed(() =>
   })
 )
 
-const edgeStyle = computed(() => ({
+const edgeStyle = {
   stroke: '#4caf50',
   strokeWidth: 2,
-}))
+}
 </script>
 
 <template>
