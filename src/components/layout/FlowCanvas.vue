@@ -99,6 +99,9 @@ export default {
       this.nodes = this.nodes.filter((node) => node.id !== this.idDeletingNode)
 
       this.closeDeleteDialog()
+
+      console.log(this.edges)
+      console.log(this.nodes)
     },
     cancelDeleteNode() {
       this.closeDeleteDialog()

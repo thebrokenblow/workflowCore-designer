@@ -3,32 +3,28 @@
     <!-- Точки соединения -->
     <div class="condition-node__handles">
       <Handle
-        type="target"
+        type="source"
         :position="Position.Top"
         id="top-handle"
         class="condition-node__handle condition-node__handle--top"
-        :is-connectable="true"
       />
       <Handle
         type="source"
         :position="Position.Right"
         id="right-handle"
         class="condition-node__handle condition-node__handle--right"
-        :is-connectable="true"
       />
       <Handle
         type="source"
         :position="Position.Bottom"
         id="bottom-handle"
         class="condition-node__handle condition-node__handle--bottom"
-        :is-connectable="true"
       />
       <Handle
-        type="target"
+        type="source"
         :position="Position.Left"
         id="left-handle"
         class="condition-node__handle condition-node__handle--left"
-        :is-connectable="true"
       />
     </div>
 

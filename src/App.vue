@@ -2,7 +2,7 @@
   <div class="workflow-editor">
     <MenuBlocks class="workflow-editor__menu-blocks" />
     <div class="workflow-editor__graph-container">
-      <ToolBar class="workflow-editor__toolbar" />
+      <ToolBar @save-scheme="saveScheme" class="workflow-editor__toolbar" />
       <FlowCanvas class="workflow-editor__canvas" />
     </div>
   </div>
@@ -15,10 +15,17 @@ import MenuBlocks from './components/layout/SideBar.vue'
 
 export default {
   name: 'App',
+
   components: {
     FlowCanvas,
     ToolBar,
     MenuBlocks,
+  },
+
+  methods: {
+    saveScheme() {
+      console.log('saveScheme 1')
+    },
   },
 }
 </script>

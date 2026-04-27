@@ -1,5 +1,5 @@
 <template>
-  <button class="save-json-button">
+  <button @click.stop="saveScheme" class="save-json-button">
     <span class="save-json-button__text">Сохранить Workflow JSON</span>
   </button>
 </template>
@@ -7,6 +7,12 @@
 <script>
 export default {
   name: 'SaveJsonButton',
+  emits: ['saveScheme'],
+  methods: {
+    saveScheme() {
+      this.$emit('saveScheme')
+    },
+  },
 }
 </script>
 

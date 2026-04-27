@@ -2,32 +2,28 @@
   <div class="parallel-split-node">
     <div class="parallel-split-node__handles">
       <Handle
-        type="target"
+        type="source"
         :position="Position.Top"
         id="top-handle"
         class="parallel-split-node__handle parallel-split-node__handle--top"
-        :is-connectable="true"
       />
       <Handle
         type="source"
         :position="Position.Right"
         id="right-handle"
         class="parallel-split-node__handle parallel-split-node__handle--right"
-        :is-connectable="true"
       />
       <Handle
         type="source"
         :position="Position.Bottom"
         id="bottom-handle"
         class="parallel-split-node__handle parallel-split-node__handle--bottom"
-        :is-connectable="true"
       />
       <Handle
-        type="target"
+        type="source"
         :position="Position.Left"
         id="left-handle"
         class="parallel-split-node__handle parallel-split-node__handle--left"
-        :is-connectable="true"
       />
     </div>
 

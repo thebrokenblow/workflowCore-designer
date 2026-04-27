@@ -3,14 +3,14 @@
     <!-- Точки соединения -->
     <div class="loop-node__handles">
       <Handle
-        type="target"
+        type="source"
         :position="Position.Top"
         id="top-handle"
         class="loop-node__handle loop-node__handle--top"
         :is-connectable="true"
       />
       <Handle
-        type="target"
+        type="source"
         :position="Position.Left"
         id="left-handle"
         class="loop-node__handle loop-node__handle--left"
@@ -34,16 +34,21 @@
 
     <!-- Шестиугольник для цикла -->
     <div class="loop-node__hexagon">
-      <!-- Поле для ввода условия -->
+      <!-- Поле для ввода условия с возможностью редактирования -->
       <div class="loop-node__condition">
         <input
+          ref="editingCondition"
+          v-if="isEditingCondition"
           v-model="condition"
           type="text"
           placeholder="Условие цикла"
-          class="loop-node__condition-input"
-          @dblclick.stop
-          @click.stop
+          class="loop-node__condition-input loop-node__condition-input--editing"
         />
+        <div v-else class="loop-node__condition-display" @dblclick.stop="enableConditionEditing">
+          <span class="loop-node__condition-text">
+            {{ condition || 'Условие цикла' }}
+          </span>
+        </div>
       </div>
     </div>
 
@@ -60,6 +65,8 @@
 </template>
 
 <script>
+import { onClickOutside } from '@vueuse/core'
+import { useTemplateRef } from 'vue'
 import { Handle, Position } from '@vue-flow/core'
 
 export default {
@@ -75,33 +82,33 @@ export default {
     },
   },
 
-  emits: ['confirmDeleteNode', 'update:data'],
+  emits: ['confirmDeleteNode'],
 
   data() {
     return {
       nameNode: '"Блок Цикл"',
       Position: Position,
-      condition: this.data?.condition || '',
+      condition: '',
+      isEditingCondition: false,
     }
   },
 
-  watch: {
-    condition(newValue) {
-      this.$emit('update:data', { condition: newValue })
-    },
-    'data.condition': {
-      handler(newValue) {
-        if (newValue !== this.condition) {
-          this.condition = newValue || ''
-        }
-      },
-      immediate: true,
-    },
+  mounted() {
+    const editingNameHeader = useTemplateRef('editingCondition')
+    onClickOutside(editingNameHeader, () => {
+      if (this.isEditingCondition) {
+        this.isEditingCondition = false
+      }
+    })
   },
 
   methods: {
     deleteNode() {
       this.$emit('confirmDeleteNode', this.id, this.nameNode)
+    },
+
+    enableConditionEditing() {
+      this.isEditingCondition = true
     },
   },
 }
@@ -150,8 +157,36 @@ export default {
   justify-content: center;
 }
 
-.loop-node__condition-input {
+/* Режим отображения (span) */
+.loop-node__condition-display {
+  cursor: text;
   width: 100%;
+  text-align: center;
+}
+
+.loop-node__condition-text {
+  display: inline-block;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  min-width: 80px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+}
+
+.loop-node__condition-text:hover {
+  cursor: pointer;
+}
+
+/* Режим редактирования (input) */
+.loop-node__condition-input {
   background: rgba(255, 255, 255, 0.95);
   border: none;
   border-radius: 6px;
@@ -165,6 +200,13 @@ export default {
   transition: all 0.2s ease;
   cursor: text;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.loop-node__condition-input--editing {
+  background: white;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+  transform: scale(1.02);
 }
 
 .loop-node__condition-input:focus {

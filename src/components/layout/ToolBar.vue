@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <SaveJsonButton />
+    <SaveJsonButton @save-scheme="saveScheme" />
   </div>
 </template>
 
@@ -49,6 +49,12 @@ export default {
         projectName: 'Workflow.Reports',
       },
     }
+  },
+
+  methods: {
+    saveScheme() {
+      this.$emit('saveScheme')
+    },
   },
 }
 </script>

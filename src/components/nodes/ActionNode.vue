@@ -3,32 +3,28 @@
     <!-- Точки соединения -->
     <div class="action-node__handles">
       <Handle
-        type="target"
+        type="source"
         :position="Position.Top"
         id="top-handle"
         class="action-node__handle action-node__handle--top"
-        :is-connectable="true"
       />
       <Handle
-        type="target"
+        type="source"
         :position="Position.Left"
         id="left-handle"
         class="action-node__handle action-node__handle--left"
-        :is-connectable="true"
       />
       <Handle
         type="source"
         :position="Position.Right"
         id="right-handle"
         class="action-node__handle action-node__handle--right"
-        :is-connectable="true"
       />
       <Handle
         type="source"
         :position="Position.Bottom"
         id="bottom-handle"
         class="action-node__handle action-node__handle--bottom"
-        :is-connectable="true"
       />
     </div>
 
@@ -36,6 +32,7 @@
       <!-- Шапка -->
       <div class="action-node__header">
         <input
+          ref="editingNameHeader"
           v-if="isEditingNameHeader"
           v-model="nameHeader"
           type="text"
@@ -58,11 +55,7 @@
           <button class="action-node__add-btn" @click.stop="addInput">+</button>
         </div>
         <div class="action-node__params-list">
-          <div
-            v-for="(inputParam, index) in inputsList"
-            :key="inputParam.id"
-            class="action-node__param-row"
-          >
+          <div v-for="inputParam in inputsList" :key="inputParam.id" class="action-node__param-row">
             <input
               type="text"
               class="action-node__param-variable-name"
@@ -97,7 +90,7 @@
         </div>
         <div class="action-node__params-list">
           <div
-            v-for="(outputParam, index) in outputsList"
+            v-for="outputParam in outputsList"
             :key="outputParam.id"
             class="action-node__param-row"
           >
@@ -138,6 +131,8 @@
 </template>
 
 <script>
+import { onClickOutside } from '@vueuse/core'
+import { useTemplateRef } from 'vue'
 import { Handle, Position } from '@vue-flow/core'
 
 export default {
@@ -146,7 +141,11 @@ export default {
   components: { Handle },
 
   props: {
-    id: { type: String, required: true },
+    id: { type: String, required: true, default: () => '' },
+    data: {
+      type: Object,
+      default: () => ({}),
+    },
   },
 
   emits: ['confirmDeleteNode'],
@@ -162,6 +161,15 @@ export default {
       inputsList: [],
       outputsList: [],
     }
+  },
+
+  mounted() {
+    const editingNameHeader = useTemplateRef('editingNameHeader')
+    onClickOutside(editingNameHeader, () => {
+      if (this.isEditingNameHeader) {
+        this.isEditingNameHeader = false
+      }
+    })
   },
 
   methods: {

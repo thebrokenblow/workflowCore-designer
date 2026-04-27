@@ -2,32 +2,28 @@
   <div class="sync-node">
     <div class="sync-node__handles">
       <Handle
-        type="target"
+        type="source"
         :position="Position.Top"
         id="top-handle"
         class="sync-node__handle sync-node__handle--top"
-        :is-connectable="true"
       />
       <Handle
         type="source"
         :position="Position.Right"
         id="right-handle"
         class="sync-node__handle sync-node__handle--right"
-        :is-connectable="true"
       />
       <Handle
         type="source"
         :position="Position.Bottom"
         id="bottom-handle"
         class="sync-node__handle sync-node__handle--bottom"
-        :is-connectable="true"
       />
       <Handle
-        type="target"
+        type="source"
         :position="Position.Left"
         id="left-handle"
         class="sync-node__handle sync-node__handle--left"
-        :is-connectable="true"
       />
     </div>
 
