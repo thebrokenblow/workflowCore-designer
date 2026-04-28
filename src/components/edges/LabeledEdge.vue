@@ -27,7 +27,7 @@ onClickOutside(editingInput, () => {
 
 const emit = defineEmits(['inputValueChange'])
 
-const inputValue = ref('')
+const inputValue = ref(props.data.inputValue || '')
 const isEditing = ref(false)
 
 const path = computed(() =>

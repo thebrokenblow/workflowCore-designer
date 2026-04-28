@@ -19,6 +19,7 @@
         :position="Position.Right"
         id="right-handle"
         class="action-node__handle action-node__handle--right"
+        :is-connectable="true"
       />
       <Handle
         type="source"
@@ -39,8 +40,8 @@
           class="action-node__header-input"
         />
         <div v-else class="action-node__header-title" @dblclick.stop="enableHeaderEditing">
-          <span class="action-node__header-name" :title="nameHeader">
-            {{ nameHeader }}
+          <span class="action-node__header-name">
+            {{ nameHeader || 'Название действия' }}
           </span>
         </div>
       </div>
@@ -141,21 +142,30 @@ export default {
   components: { Handle },
 
   props: {
-    id: { type: String, required: true, default: () => '' },
+    id: {
+      type: String,
+      required: true,
+      default: () => '',
+    },
+    data: {
+      type: Object,
+      required: false,
+      default: () => {},
+    },
   },
 
-  emits: ['confirmDeleteNode', 'inputsListChange', 'outputsListChange'],
+  emits: ['confirmDeleteNode', 'inputsListChange', 'outputsListChange', 'changeNameHeader'],
 
   data() {
     return {
-      nameHeader: 'Название действия',
+      nameHeader: this.data.nameHeader || '',
       nameNode: '"Блок действия"',
       isEditingNameHeader: false,
       Position: Position,
       nextInputId: 0,
       nextOutputId: 0,
-      inputsList: [],
-      outputsList: [],
+      inputsList: this.data.inputsList || [],
+      outputsList: this.data.outputsList || [],
     }
   },
 
@@ -178,6 +188,7 @@ export default {
     const editingNameHeader = useTemplateRef('editingNameHeader')
     onClickOutside(editingNameHeader, () => {
       if (this.isEditingNameHeader) {
+        this.$emit('changeNameHeader', this.id, this.nameHeader)
         this.isEditingNameHeader = false
       }
     })
@@ -185,6 +196,10 @@ export default {
 
   methods: {
     enableHeaderEditing() {
+      if (this.nameHeader.length === 0) {
+        this.nameHeader = 'Название действия'
+      }
+
       this.isEditingNameHeader = true
     },
     deleteNode() {

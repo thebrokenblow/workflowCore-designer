@@ -22,7 +22,19 @@ export default {
     MenuBlocks,
   },
 
+  mounted() {
+    window.addEventListener('beforeunload', this.saveBeforeUnload)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.saveBeforeUnload)
+  },
+
   methods: {
+    saveBeforeUnload() {
+      const workflowData = this.$refs.flowCanvas.getWorkflowData()
+      localStorage.setItem('workflowScheme', JSON.stringify(workflowData))
+    },
     saveScheme() {
       const workflowData = this.$refs.flowCanvas.getWorkflowData()
       console.log(workflowData.nodes)

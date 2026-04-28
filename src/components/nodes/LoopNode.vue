@@ -88,7 +88,7 @@ export default {
     return {
       nameNode: '"Блок Цикл"',
       Position: Position,
-      condition: '',
+      condition: this.data.condition || '',
       isEditingCondition: false,
     }
   },

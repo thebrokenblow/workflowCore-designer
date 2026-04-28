@@ -14,6 +14,7 @@
       <template #node-actionNode="node">
         <ActionNode
           v-bind="node"
+          @change-name-header="changeNameHeader"
           @inputs-list-change="inputsListChange"
           @outputs-list-change="outputsListChange"
           @confirm-delete-node="confirmDeleteNode"
@@ -44,7 +45,6 @@
         <LabeledEdge v-bind="edge" @input-value-change="handleEdgeInputChange" />
       </template>
 
-      <!-- ДОБАВЛЕНО: Шаблон для base ребер -->
       <template #edge-base="edge">
         <BaseEdge v-bind="edge" />
       </template>
@@ -66,7 +66,9 @@
 import { ref, markRaw } from 'vue'
 import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core'
 import DropzoneBackground from '../ui/flowCanvas/DropzoneBackground.vue'
+
 import useDragAndDrop from '../../composables/useDnD.js'
+import { SchemaStorage } from '../../storages/shemaStorage.js'
 
 import ConfirmDeleteDialog from '../ui/flowCanvas/ConfirmDeleteDialog.vue'
 
@@ -103,7 +105,40 @@ export default {
     }
   },
 
+  mounted() {
+    const workflowSchemeJson = localStorage.getItem('workflowScheme')
+    const workflowScheme = JSON.parse(workflowSchemeJson)
+    this.nodes = workflowScheme.nodes
+    this.edges = workflowScheme.edges
+
+    window.addEventListener('beforeunload', this.saveBeforeUnload)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.saveBeforeUnload)
+  },
+
   methods: {
+    conditionChange(id, condition) {
+      const loopNode = this.nodes.find((node) => node.id === id)
+      loopNode.data.condition = condition
+    },
+
+    changeNameHeader(id, nameHeader) {
+      const actionNode = this.nodes.find((node) => node.id === id)
+      actionNode.data.nameHeader = nameHeader
+    },
+
+    saveBeforeUnload() {
+      localStorage.setItem(
+        'workflowScheme',
+        JSON.stringify({
+          nodes: this.nodes,
+          edges: this.edges,
+        })
+      )
+    },
+
     getWorkflowData() {
       return {
         nodes: this.nodes,
@@ -111,22 +146,22 @@ export default {
       }
     },
 
-    handleEdgeInputChange(id, text) {
+    handleEdgeInputChange(id, inputValue) {
       const edge = this.edges.find((edge) => edge.id === id)
-      edge.data.text = text
+      edge.data.inputValue = inputValue
     },
 
     inputsListChange(id, inputsList) {
       const actionNode = this.nodes.find((node) => node.id === id)
       if (actionNode) {
-        actionNode.inputsList = inputsList
+        actionNode.data.inputsList = inputsList
       }
     },
 
     outputsListChange(id, outputsList) {
       const actionNode = this.nodes.find((node) => node.id === id)
       if (actionNode) {
-        actionNode.outputsList = outputsList
+        actionNode.data.outputsList = outputsList
       }
     },
 
@@ -173,10 +208,13 @@ export default {
   },
 
   setup() {
+    const schemaStorage = new SchemaStorage()
     const nodes = ref([])
     const edges = ref([])
     const { addEdges } = useVueFlow()
-    const { onDragOver, onDragLeave, onDrop } = useDragAndDrop()
+    const { onDragOver, onDragLeave, onDrop, setShemaStorage } = useDragAndDrop()
+
+    setShemaStorage(schemaStorage)
 
     const edgeTypes = {
       base: markRaw(BaseEdge),
@@ -208,7 +246,7 @@ export default {
           id: `edge_${Date.now()}_${Math.random()}`,
           ...connection,
           type: 'custom',
-          data: { text: '' },
+          data: { inputValue: '' },
           markerEnd: {
             type: MarkerType.ArrowClosed,
             width: 15,
@@ -245,6 +283,7 @@ export default {
       onDrop,
       onConnect,
       MarkerType,
+      schemaStorage,
     }
   },
 }

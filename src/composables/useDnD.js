@@ -1,31 +1,25 @@
+// composables/useDnD.js
 import { useVueFlow } from '@vue-flow/core'
 import { ref, watch } from 'vue'
 
-let id = 0
+let myShemaStorage = null
 
-/**
- * @returns {string} - A unique id.
- */
 function getId(draggedType) {
-  return `${draggedType}_${id++}`
+  return `${draggedType}_${Date.now()}_${Math.random()}`
 }
 
-/**
- * In a real world scenario you'd want to avoid creating refs in a global scope like this as they might not be cleaned up properly.
- * @type {{draggedType: Ref<string|null>, isDragOver: Ref<boolean>, isDragging: Ref<boolean>}}
- */
 const state = {
-  /**
-   * The type of the node being dragged.
-   */
   draggedType: ref(null),
   isDragOver: ref(false),
   isDragging: ref(false),
 }
 
 export default function useDragAndDrop() {
-  const { draggedType, isDragOver, isDragging } = state
+  function setShemaStorage(shemaStorage) {
+    myShemaStorage = shemaStorage
+  }
 
+  const { draggedType, isDragOver, isDragging } = state
   const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow()
 
   watch(isDragging, (dragging) => {
@@ -44,15 +38,9 @@ export default function useDragAndDrop() {
 
     draggedType.value = type
     isDragging.value = true
-
     document.addEventListener('drop', onDragEnd)
   }
 
-  /**
-   * Handles the drag over event.
-   *
-   * @param {DragEvent} event
-   */
   function onDragOver(event) {
     event.preventDefault()
 
@@ -76,12 +64,11 @@ export default function useDragAndDrop() {
     document.removeEventListener('drop', onDragEnd)
   }
 
-  /**
-   * Handles the drop event.
-   *
-   * @param {DragEvent} event
-   */
   function onDrop(event) {
+    if (!myShemaStorage) {
+      return
+    }
+
     const position = screenToFlowCoordinate({
       x: event.clientX,
       y: event.clientY,
@@ -95,11 +82,6 @@ export default function useDragAndDrop() {
       position,
     }
 
-    /**
-     * Align node position after drop, so it's centered to the mouse
-     *
-     * We can hook into events even in a callback, and we can remove the event listener after it's been called.
-     */
     const { off } = onNodesInitialized(() => {
       updateNode(nodeId, (node) => ({
         position: {
@@ -107,9 +89,12 @@ export default function useDragAndDrop() {
           y: node.position.y - node.dimensions.height / 2,
         },
       }))
-
       off()
     })
+
+    if (myShemaStorage) {
+      myShemaStorage.addNode(newNode)
+    }
 
     addNodes(newNode)
   }
@@ -122,5 +107,6 @@ export default function useDragAndDrop() {
     onDragLeave,
     onDragOver,
     onDrop,
+    setShemaStorage, // ✅ Нужно вернуть эту функцию!
   }
 }
