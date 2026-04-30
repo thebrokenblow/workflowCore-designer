@@ -1,10 +1,7 @@
-// composables/useDnD.js
 import { useVueFlow } from '@vue-flow/core'
 import { ref, watch } from 'vue'
 
-let myShemaStorage = null
-
-function getId(draggedType) {
+function createId(draggedType) {
   return `${draggedType}_${Date.now()}_${Math.random()}`
 }
 
@@ -15,10 +12,6 @@ const state = {
 }
 
 export default function useDragAndDrop() {
-  function setShemaStorage(shemaStorage) {
-    myShemaStorage = shemaStorage
-  }
-
   const { draggedType, isDragOver, isDragging } = state
   const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow()
 
@@ -65,16 +58,12 @@ export default function useDragAndDrop() {
   }
 
   function onDrop(event) {
-    if (!myShemaStorage) {
-      return
-    }
-
     const position = screenToFlowCoordinate({
       x: event.clientX,
       y: event.clientY,
     })
 
-    const nodeId = getId(draggedType.value)
+    const nodeId = createId(draggedType.value)
 
     const newNode = {
       id: nodeId,
@@ -92,10 +81,6 @@ export default function useDragAndDrop() {
       off()
     })
 
-    if (myShemaStorage) {
-      myShemaStorage.addNode(newNode)
-    }
-
     addNodes(newNode)
   }
 
@@ -107,6 +92,5 @@ export default function useDragAndDrop() {
     onDragLeave,
     onDragOver,
     onDrop,
-    setShemaStorage, // ✅ Нужно вернуть эту функцию!
   }
 }

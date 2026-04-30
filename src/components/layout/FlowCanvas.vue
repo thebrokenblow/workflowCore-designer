@@ -6,6 +6,7 @@
       v-model:edges="edges"
       :edge-types="edgeTypes"
       :connection-line-options="connectionLineOptions"
+      :is-valid-connection="isValidConnection"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
@@ -68,7 +69,7 @@ import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core'
 import DropzoneBackground from '../ui/flowCanvas/DropzoneBackground.vue'
 
 import useDragAndDrop from '../../composables/useDnD.js'
-import { SchemaStorage } from '../../storages/shemaStorage.js'
+import { createDefaultEdge, createEdge } from '../../core/factories/EdgeFactory.js'
 
 import ConfirmDeleteDialog from '../ui/flowCanvas/ConfirmDeleteDialog.vue'
 
@@ -119,6 +120,13 @@ export default {
   },
 
   methods: {
+    isValidConnection(connection) {
+      if (connection.source === connection.target) {
+        return false
+      }
+
+      return true
+    },
     conditionChange(id, condition) {
       const loopNode = this.nodes.find((node) => node.id === id)
       loopNode.data.condition = condition
@@ -208,68 +216,20 @@ export default {
   },
 
   setup() {
-    const schemaStorage = new SchemaStorage()
     const nodes = ref([])
     const edges = ref([])
     const { addEdges } = useVueFlow()
-    const { onDragOver, onDragLeave, onDrop, setShemaStorage } = useDragAndDrop()
-
-    setShemaStorage(schemaStorage)
+    const { onDragOver, onDragLeave, onDrop } = useDragAndDrop()
 
     const edgeTypes = {
       base: markRaw(BaseEdge),
       custom: markRaw(LabeledEdge),
     }
 
-    const connectionLineOptions = {
-      type: 'step',
-      style: {
-        stroke: '#4caf50',
-        strokeWidth: 2,
-      },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        width: 15,
-        height: 15,
-        color: '#4caf50',
-        orient: 'auto',
-      },
-    }
+    const connectionLineOptions = createDefaultEdge()
 
     const onConnect = (connection) => {
-      const sourceNode = connection.source.split('_')[0]
-
-      // eslint-disable-next-line no-useless-assignment
-      let newEdge = {}
-      if (sourceNode === 'conditionNode') {
-        newEdge = {
-          id: `edge_${Date.now()}_${Math.random()}`,
-          ...connection,
-          type: 'custom',
-          data: { inputValue: '' },
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: 15,
-            height: 15,
-            color: '#4caf50',
-            orient: 'auto',
-          },
-        }
-      } else {
-        newEdge = {
-          id: `edge_${Date.now()}_${Math.random()}`,
-          ...connection,
-          type: 'base',
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: 15,
-            height: 15,
-            color: '#4caf50',
-            orient: 'auto',
-          },
-        }
-      }
-
+      const newEdge = createEdge(connection)
       addEdges([newEdge])
     }
 
@@ -283,7 +243,6 @@ export default {
       onDrop,
       onConnect,
       MarkerType,
-      schemaStorage,
     }
   },
 }

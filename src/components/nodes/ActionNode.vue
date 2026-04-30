@@ -19,7 +19,6 @@
         :position="Position.Right"
         id="right-handle"
         class="action-node__handle action-node__handle--right"
-        :is-connectable="true"
       />
       <Handle
         type="source"
@@ -158,12 +157,16 @@ export default {
 
   data() {
     return {
-      nameHeader: this.data.nameHeader || '',
       nameNode: '"Блок действия"',
+
+      nameHeader: this.data.nameHeader || '',
       isEditingNameHeader: false,
+
       Position: Position,
+
       nextInputId: 0,
       nextOutputId: 0,
+
       inputsList: this.data.inputsList || [],
       outputsList: this.data.outputsList || [],
     }
