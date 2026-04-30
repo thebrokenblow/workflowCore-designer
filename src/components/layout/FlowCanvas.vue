@@ -7,6 +7,8 @@
       :edge-types="edgeTypes"
       :connection-line-options="connectionLineOptions"
       :is-valid-connection="isValidConnection"
+      fit-view-on-init
+      @nodes-change="onNodesChange"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
@@ -50,6 +52,8 @@
         <BaseEdge v-bind="edge" />
       </template>
 
+      <HelperLines :horizontal="helperLineHorizontal" :vertical="helperLineVertical" />
+
       <DropzoneBackground class="flow-canvas__background" />
     </VueFlow>
 
@@ -82,6 +86,9 @@ import LoopNode from '../nodes/LoopNode.vue'
 import BaseEdge from '../edges/BaseEdge.vue'
 import LabeledEdge from '../edges/LabeledEdge.vue'
 
+import HelperLines from '../ui/flowCanvas/HelperLines.vue'
+import { getHelperLines } from '../../utils/helperLines.js'
+
 export default {
   name: 'FlowCanvas',
   components: {
@@ -95,6 +102,7 @@ export default {
     ConfirmDeleteDialog,
     BaseEdge,
     LabeledEdge,
+    HelperLines,
   },
 
   data() {
@@ -233,6 +241,56 @@ export default {
       addEdges([newEdge])
     }
 
+    const { applyNodeChanges } = useVueFlow()
+
+    const helperLineHorizontal = ref(undefined)
+    const helperLineVertical = ref(undefined)
+
+    /**
+     * Обновляет линии-помощники при перемещении узла
+     * @param {Array} changes - массив изменений узлов
+     * @param {Array} nodesList - список всех узлов
+     * @returns {Array} изменённый массив с поправленными позициями
+     */
+    function updateHelperLines(changes, nodesList) {
+      // Сбрасываем линии-помощники
+      helperLineHorizontal.value = undefined
+      helperLineVertical.value = undefined
+
+      // Проверяем, что это перемещение узла с перетаскиванием
+      if (
+        changes.length === 1 &&
+        changes[0].type === 'position' &&
+        changes[0].dragging &&
+        changes[0].position
+      ) {
+        // Получаем линии-помощники и позицию для привязки
+        const helperLines = getHelperLines(changes[0], nodesList)
+
+        // Привязываем узел к позиции линии-помощника
+        if (helperLines.snapPosition.x !== undefined) {
+          changes[0].position.x = helperLines.snapPosition.x
+        }
+        if (helperLines.snapPosition.y !== undefined) {
+          changes[0].position.y = helperLines.snapPosition.y
+        }
+
+        // Устанавливаем линии для отображения
+        helperLineHorizontal.value = helperLines.horizontal
+        helperLineVertical.value = helperLines.vertical
+      }
+
+      return changes
+    }
+
+    /**
+     * Обработчик изменения узлов
+     * @param {Array} changes - массив изменений
+     */
+    function onNodesChange(changes) {
+      const updatedChanges = updateHelperLines(changes, nodes.value)
+      nodes.value = applyNodeChanges(updatedChanges)
+    }
     return {
       nodes,
       edges,
@@ -243,6 +301,9 @@ export default {
       onDrop,
       onConnect,
       MarkerType,
+      onNodesChange,
+      helperLineHorizontal,
+      helperLineVertical,
     }
   },
 }
