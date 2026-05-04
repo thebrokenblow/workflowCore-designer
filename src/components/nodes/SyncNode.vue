@@ -1,5 +1,5 @@
 <template>
-  <div class="sync-node">
+  <div class="sync-node" :class="{ 'sync-node--selected': selected }">
     <div class="sync-node__handles">
       <Handle
         type="source"
@@ -63,7 +63,20 @@ export default {
   components: { Handle },
 
   props: {
-    id: { type: String, required: true },
+    id: {
+      type: String,
+      required: true,
+    },
+    data: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
+    selected: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
   emits: ['confirmDeleteNode'],
@@ -91,25 +104,29 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+}
+
+/* Выделение блока - как в parallel-split-node */
+.sync-node--selected {
+  outline: 3px solid #ff9800;
+  border-radius: 12px;
 }
 
 .sync-node:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
 }
 
 /* Ромб - ЗЕЛЁНЫЙ для синхронизации (#4caf50) */
 .sync-node__diamond {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  position: relative;
 }
 
 .sync-node:hover .sync-node__diamond {
@@ -229,11 +246,11 @@ export default {
   transform: translateY(-50%) scale(1.5) !important;
 }
 
-/* Кнопка удаления */
+/* Кнопка удаления - как в parallel-split-node */
 .sync-node__delete-btn {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: -20px;
+  right: -20px;
   background: rgba(0, 0, 0, 0.7);
   border: none;
   border-radius: 50%;
@@ -245,7 +262,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
   backdrop-filter: blur(4px);
   opacity: 0;
   z-index: 30;

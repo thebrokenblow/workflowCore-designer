@@ -1,5 +1,5 @@
 <template>
-  <div class="action-node">
+  <div class="action-node" :class="{ 'action-node--selected': selected }">
     <!-- Точки соединения -->
     <div class="action-node__handles">
       <Handle
@@ -55,7 +55,11 @@
           <button class="action-node__add-btn" @click.stop="addInput">+</button>
         </div>
         <div class="action-node__params-list">
-          <div v-for="inputParam in inputsList" :key="inputParam.id" class="action-node__param-row">
+          <div
+            v-for="(inputParam, index) in inputsList"
+            :key="inputParam.id"
+            class="action-node__param-row"
+          >
             <input
               type="text"
               class="action-node__param-variable-name"
@@ -90,7 +94,7 @@
         </div>
         <div class="action-node__params-list">
           <div
-            v-for="outputParam in outputsList"
+            v-for="(outputParam, index) in outputsList"
             :key="outputParam.id"
             class="action-node__param-row"
           >
@@ -150,6 +154,11 @@ export default {
       type: Object,
       required: false,
       default: () => {},
+    },
+    selected: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
 
@@ -244,14 +253,16 @@ export default {
   background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   border-radius: 16px;
   padding: 2px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
   font-family: 'Segoe UI', sans-serif;
 }
 
+.action-node--selected {
+  outline: 3px solid #ff9800;
+}
+
+/* Трансформация при наведении (только поднятие, без тени) */
 .action-node:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
 /* Элементы блока */
@@ -284,8 +295,8 @@ export default {
   background: white !important;
   border: 2px solid #4caf50 !important;
   border-radius: 50% !important;
-  transition: all 0.2s ease !important;
   cursor: crosshair !important;
+  transition: all 0.2s ease !important;
   z-index: 20 !important;
 }
 
@@ -424,7 +435,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
   flex-shrink: 0;
 }
 
@@ -449,7 +459,6 @@ export default {
   background: #f8f9fa;
   padding: 6px 8px;
   border-radius: 8px;
-  transition: all 0.2s;
 }
 
 .action-node__param-row:hover {
@@ -466,7 +475,6 @@ export default {
   font-size: 11px;
   font-family: 'Segoe UI', monospace;
   outline: none;
-  transition: all 0.2s;
   min-width: 0;
 }
 
@@ -492,7 +500,6 @@ export default {
   font-size: 11px;
   font-family: 'Segoe UI', monospace;
   outline: none;
-  transition: all 0.2s;
   min-width: 0;
 }
 
@@ -514,7 +521,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
   flex-shrink: 0;
 }
 
@@ -551,7 +557,6 @@ export default {
   padding: 2px 8px;
   border-radius: 12px;
   backdrop-filter: blur(2px);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   letter-spacing: 0.3px;
   transition: all 0.2s ease;
   pointer-events: none;
@@ -561,7 +566,6 @@ export default {
 .action-node:hover .action-node__label {
   color: #2e7d32;
   background: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Кнопка удаления блока */
@@ -580,7 +584,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
   backdrop-filter: blur(4px);
   opacity: 0;
   z-index: 30;

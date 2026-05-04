@@ -1,5 +1,5 @@
 <template>
-  <div class="loop-node">
+  <div class="loop-node" :class="{ 'loop-node--selected': selected }">
     <!-- Точки соединения -->
     <div class="loop-node__handles">
       <Handle
@@ -80,6 +80,11 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    selected: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
   emits: ['confirmDeleteNode', 'conditionChange'],
@@ -123,11 +128,17 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+}
+
+/* Выделение блока - увеличенный отступ */
+.loop-node--selected {
+  outline: 3px solid #ff9800;
+  outline-offset: 12px;
+  border-radius: 12px;
 }
 
 .loop-node:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
 }
 
 /* Шестиугольник */
@@ -179,7 +190,6 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: all 0.2s ease;
 }
 
 .loop-node__condition-text:hover {
@@ -325,11 +335,11 @@ export default {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* Кнопка удаления */
+/* Кнопка удаления - как в action-node */
 .loop-node__delete-btn {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: -30px;
+  right: -30px;
   background: rgba(0, 0, 0, 0.7);
   border: none;
   border-radius: 50%;
@@ -341,8 +351,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  backdrop-filter: blur(4px);
   opacity: 0;
   z-index: 30;
 }

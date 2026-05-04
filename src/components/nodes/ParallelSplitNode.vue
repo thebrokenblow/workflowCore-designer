@@ -1,5 +1,6 @@
 <template>
-  <div class="parallel-split-node">
+  <div class="parallel-split-node" :class="{ 'parallel-split-node--selected': selected }">
+    <!-- Точки соединения -->
     <div class="parallel-split-node__handles">
       <Handle
         type="source"
@@ -47,7 +48,7 @@
       <span>Parallel</span>
     </div>
 
-    <!-- Кнопка удаления -->
+    <!-- Кнопка удаления (появляется при наведении) -->
     <button class="parallel-split-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
       &#x1F5D1;
     </button>
@@ -63,7 +64,20 @@ export default {
   components: { Handle },
 
   props: {
-    id: { type: String, required: true },
+    id: {
+      type: String,
+      required: true,
+    },
+    data: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
+    selected: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
   emits: ['confirmDeleteNode'],
@@ -84,40 +98,44 @@ export default {
 </script>
 
 <style scoped>
-/* Блок: parallel-split-node */
+/* Базовый блок */
 .parallel-split-node {
   position: relative;
   width: 100px;
   height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+  display: inline-block;
+  background: transparent;
+  font-family: 'Segoe UI', sans-serif;
 }
 
+/* Выделение блока */
+.parallel-split-node--selected {
+  outline: 3px solid #ff9800;
+  border-radius: 12px;
+}
+
+/* Трансформация при наведении */
 .parallel-split-node:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
 }
 
-/* Элемент: diamond */
+/* Ромб (внешняя форма) */
 .parallel-split-node__diamond {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .parallel-split-node:hover .parallel-split-node__diamond {
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
-/* Элемент: plus */
+/* Плюс внутри ромба */
 .parallel-split-node__plus {
   display: flex;
   align-items: center;
@@ -131,35 +149,7 @@ export default {
   stroke-width: 2.5;
 }
 
-/* Элемент: label (подпись снизу) */
-.parallel-split-node__label {
-  position: absolute;
-  bottom: -28px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: 'Segoe UI', sans-serif;
-  color: #4caf50;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2px 8px;
-  border-radius: 12px;
-  backdrop-filter: blur(2px);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.3px;
-  transition: all 0.2s ease;
-  pointer-events: none;
-  z-index: 25;
-}
-
-.parallel-split-node:hover .parallel-split-node__label {
-  color: #2e7d32;
-  background: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-/* Элемент: handles */
+/* Хендлы (точки соединения) */
 .parallel-split-node__handles {
   position: absolute;
   top: 0;
@@ -170,7 +160,6 @@ export default {
   z-index: 10;
 }
 
-/* Элемент: handle (базовый) */
 .parallel-split-node__handle {
   pointer-events: auto;
   position: absolute !important;
@@ -179,8 +168,8 @@ export default {
   background: white !important;
   border: 2px solid #4caf50 !important;
   border-radius: 50% !important;
-  transition: all 0.2s ease !important;
   cursor: crosshair !important;
+  transition: all 0.2s ease !important;
   z-index: 20 !important;
 }
 
@@ -191,7 +180,6 @@ export default {
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3) !important;
 }
 
-/* Модификаторы: позиции handle */
 .parallel-split-node__handle--top {
   top: -7px !important;
   left: 50% !important;
@@ -232,11 +220,39 @@ export default {
   transform: translateY(-50%) scale(1.5) !important;
 }
 
-/* Элемент: delete-btn */
+/* Подпись снизу */
+.parallel-split-node__label {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  color: #4caf50;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 8px;
+  border-radius: 12px;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.parallel-split-node:hover .parallel-split-node__label {
+  color: #2e7d32;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Кнопка удаления блока */
 .parallel-split-node__delete-btn {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: -20px;
+  right: -20px;
   background: rgba(0, 0, 0, 0.7);
   border: none;
   border-radius: 50%;
@@ -248,7 +264,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
   backdrop-filter: blur(4px);
   opacity: 0;
   z-index: 30;

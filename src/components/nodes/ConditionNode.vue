@@ -1,5 +1,5 @@
 <template>
-  <div class="condition-node">
+  <div class="condition-node" :class="{ 'condition-node--selected': selected }">
     <!-- Точки соединения -->
     <div class="condition-node__handles">
       <Handle
@@ -73,7 +73,20 @@ export default {
   components: { Handle },
 
   props: {
-    id: { type: String, required: true },
+    id: {
+      type: String,
+      required: true,
+    },
+    data: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
+    selected: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
   emits: ['confirmDeleteNode'],
@@ -94,18 +107,23 @@ export default {
 </script>
 
 <style scoped>
+/* Базовый блок */
 .condition-node {
   position: relative;
   width: 100px;
   height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+  display: inline-block;
+  background: transparent;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.condition-node--selected {
+  outline: 3px solid #ff9800;
+  border-radius: 12px;
 }
 
 .condition-node:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
 }
 
 /* Ромб (внешняя форма) */
@@ -114,15 +132,9 @@ export default {
   height: 100%;
   background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.condition-node:hover .condition-node__diamond {
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
 /* Белый квадрат внутри ромба */
@@ -142,6 +154,7 @@ export default {
   height: 36px;
 }
 
+/* Хендлы (точки соединения) */
 .condition-node__handles {
   position: absolute;
   top: 0;
@@ -160,8 +173,8 @@ export default {
   background: white !important;
   border: 2px solid #4caf50 !important;
   border-radius: 50% !important;
-  transition: all 0.2s ease !important;
   cursor: crosshair !important;
+  transition: all 0.2s ease !important;
   z-index: 20 !important;
 }
 
@@ -240,11 +253,11 @@ export default {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* Кнопка удаления */
+/* Кнопка удаления блока */
 .condition-node__delete-btn {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: -20px;
+  right: -20px;
   background: rgba(0, 0, 0, 0.7);
   border: none;
   border-radius: 50%;
@@ -256,7 +269,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
   backdrop-filter: blur(4px);
   opacity: 0;
   z-index: 30;

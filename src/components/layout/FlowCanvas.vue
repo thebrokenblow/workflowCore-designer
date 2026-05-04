@@ -117,6 +117,7 @@ export default {
   mounted() {
     const workflowSchemeJson = localStorage.getItem('workflowScheme')
     const workflowScheme = JSON.parse(workflowSchemeJson)
+
     this.nodes = workflowScheme.nodes
     this.edges = workflowScheme.edges
 
@@ -226,6 +227,7 @@ export default {
   setup() {
     const nodes = ref([])
     const edges = ref([])
+
     const { addEdges } = useVueFlow()
     const { onDragOver, onDragLeave, onDrop } = useDragAndDrop()
 
