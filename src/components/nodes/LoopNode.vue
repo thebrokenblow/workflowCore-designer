@@ -102,8 +102,7 @@ export default {
     const editingNameHeader = useTemplateRef('editingCondition')
     onClickOutside(editingNameHeader, () => {
       if (this.isEditingCondition) {
-        this.$emit('conditionChange', this.id, this.condition)
-        this.isEditingCondition = false
+        this.saveCondition()
       }
     })
   },
@@ -115,6 +114,13 @@ export default {
 
     enableConditionEditing() {
       this.isEditingCondition = true
+    },
+
+    saveCondition() {
+      if (this.isEditingCondition) {
+        this.$emit('conditionChange', this.id, this.condition)
+        this.isEditingCondition = false
+      }
     },
   },
 }
@@ -155,6 +161,8 @@ export default {
   transition: all 0.3s ease;
   position: relative;
   padding: 12px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .loop-node:hover .loop-node__hexagon {
@@ -167,6 +175,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  max-width: 100%;
+  padding: 0 4px;
 }
 
 /* Режим отображения (span) */
@@ -174,6 +184,8 @@ export default {
   cursor: text;
   width: 100%;
   text-align: center;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .loop-node__condition-text {
@@ -185,11 +197,16 @@ export default {
   text-align: center;
   padding: 6px 8px;
   border-radius: 6px;
-  min-width: 80px;
   max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: auto;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  line-height: 1.3;
+  max-height: 80px;
+  max-width: 80px;
+  overflow-y: auto;
 }
 
 .loop-node__condition-text:hover {
@@ -212,18 +229,19 @@ export default {
   cursor: text;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .loop-node__condition-input--editing {
   background: white;
   box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
-  transform: scale(1.02);
 }
 
 .loop-node__condition-input:focus {
   background: white;
   box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
-  transform: scale(1.02);
 }
 
 .loop-node__condition-input::placeholder {
