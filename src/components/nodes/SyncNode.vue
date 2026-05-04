@@ -48,7 +48,12 @@
     </div>
 
     <!-- Кнопка удаления -->
-    <button class="sync-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
+    <button
+      v-show="!dragging"
+      class="sync-node__delete-btn"
+      title="Удалить блок"
+      @click.stop="deleteNode"
+    >
       &#x1F5D1;
     </button>
   </div>
@@ -73,6 +78,11 @@ export default {
       default: () => ({}),
     },
     selected: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    dragging: {
       type: Boolean,
       required: false,
       default: false,

@@ -49,7 +49,12 @@
     </div>
 
     <!-- Кнопка удаления (появляется при наведении) -->
-    <button class="parallel-split-node__delete-btn" title="Удалить блок" @click.stop="deleteNode">
+    <button
+      v-show="!dragging"
+      class="parallel-split-node__delete-btn"
+      title="Удалить блок"
+      @click.stop="deleteNode"
+    >
       &#x1F5D1;
     </button>
   </div>
@@ -74,6 +79,11 @@ export default {
       default: () => ({}),
     },
     selected: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    dragging: {
       type: Boolean,
       required: false,
       default: false,
