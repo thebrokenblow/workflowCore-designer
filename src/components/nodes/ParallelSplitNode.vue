@@ -5,24 +5,28 @@
       <Handle
         type="source"
         :position="Position.Top"
+        :is-valid-connection="isValidConnection"
         id="top-handle"
         class="parallel-split-node__handle parallel-split-node__handle--top"
       />
       <Handle
         type="source"
         :position="Position.Right"
+        :is-valid-connection="isValidConnection"
         id="right-handle"
         class="parallel-split-node__handle parallel-split-node__handle--right"
       />
       <Handle
         type="source"
         :position="Position.Bottom"
+        :is-valid-connection="isValidConnection"
         id="bottom-handle"
         class="parallel-split-node__handle parallel-split-node__handle--bottom"
       />
       <Handle
         type="source"
         :position="Position.Left"
+        :is-valid-connection="isValidConnection"
         id="left-handle"
         class="parallel-split-node__handle parallel-split-node__handle--left"
       />
@@ -100,6 +104,10 @@ export default {
   },
 
   methods: {
+    isValidConnection(connection) {
+      return connection.source !== connection.target
+    },
+
     deleteNode() {
       this.$emit('confirmDeleteNode', this.id, this.nameNode)
     },

@@ -109,6 +109,10 @@ export default {
   },
 
   methods: {
+    isValidConnection(connection) {
+      return connection.source !== connection.target
+    },
+
     deleteNode() {
       this.$emit('confirmDeleteNode', this.id, this.nameNode)
     },

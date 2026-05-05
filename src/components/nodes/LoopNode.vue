@@ -5,30 +5,33 @@
       <Handle
         type="source"
         :position="Position.Top"
+        :is-valid-connection="isValidConnection"
         id="top-handle"
         class="loop-node__handle loop-node__handle--top"
-        :is-connectable="true"
       />
+
       <Handle
         type="source"
         :position="Position.Left"
+        :is-valid-connection="isValidConnection"
         id="left-handle"
         class="loop-node__handle loop-node__handle--left"
-        :is-connectable="true"
       />
+
       <Handle
         type="source"
         :position="Position.Right"
+        :is-valid-connection="isValidConnection"
         id="right-handle"
         class="loop-node__handle loop-node__handle--right"
-        :is-connectable="true"
       />
+
       <Handle
         type="source"
         :position="Position.Bottom"
+        :is-valid-connection="isValidConnection"
         id="bottom-handle"
         class="loop-node__handle loop-node__handle--bottom"
-        :is-connectable="true"
       />
     </div>
 
@@ -118,6 +121,10 @@ export default {
   },
 
   methods: {
+    isValidConnection(connection) {
+      return connection.source !== connection.target
+    },
+
     deleteNode() {
       this.$emit('confirmDeleteNode', this.id, this.nameNode)
     },
