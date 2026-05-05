@@ -4,24 +4,28 @@
       <Handle
         type="source"
         :position="Position.Top"
+        :is-valid-connection="isValidConnection"
         id="top-handle"
         class="sync-node__handle sync-node__handle--top"
       />
       <Handle
         type="source"
         :position="Position.Right"
+        :is-valid-connection="isValidConnection"
         id="right-handle"
         class="sync-node__handle sync-node__handle--right"
       />
       <Handle
         type="source"
         :position="Position.Bottom"
+        :is-valid-connection="isValidConnection"
         id="bottom-handle"
         class="sync-node__handle sync-node__handle--bottom"
       />
       <Handle
         type="source"
         :position="Position.Left"
+        :is-valid-connection="isValidConnection"
         id="left-handle"
         class="sync-node__handle sync-node__handle--left"
       />
@@ -67,6 +71,14 @@ export default {
 
   components: { Handle },
 
+  watch: {
+    data: {
+      handler(value) {
+        this.hasConnection = value.hasConnection
+      },
+      deep: true,
+    },
+  },
   props: {
     id: {
       type: String,
@@ -91,14 +103,22 @@ export default {
 
   emits: ['confirmDeleteNode'],
 
+  mounted() {
+    this.hasConnection = this.data.hasConnection
+  },
+
   data() {
     return {
       nameNode: '"Блок Синхронизация"',
       Position: Position,
+      hasConnection: false,
     }
   },
 
   methods: {
+    isValidConnection(connection) {
+      return !(connection.source === this.id && this.hasConnection)
+    },
     deleteNode() {
       this.$emit('confirmDeleteNode', this.id, this.nameNode)
     },

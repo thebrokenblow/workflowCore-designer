@@ -228,8 +228,17 @@ export default {
     const nodes = ref([])
     const edges = ref([])
 
-    const { addEdges } = useVueFlow()
+    const { addEdges, onEdgesChange } = useVueFlow()
     const { onDragOver, onDragLeave, onDrop } = useDragAndDrop()
+
+    onEdgesChange((changes) => {
+      changes.forEach((change) => {
+        if (change.type === 'remove') {
+          const node = nodes.value.find((node) => node.id === change.source)
+          node.data.hasConnection = false
+        }
+      })
+    })
 
     const edgeTypes = {
       base: markRaw(BaseEdge),
@@ -239,6 +248,12 @@ export default {
     const connectionLineOptions = createDefaultEdge()
 
     const onConnect = (connection) => {
+      const node = nodes.value.find((node) => node.id === connection.source)
+
+      if (node.type === 'actionNode' || node.type === 'syncNode') {
+        node.data.hasConnection = true
+      }
+
       const newEdge = createEdge(connection)
       addEdges([newEdge])
     }

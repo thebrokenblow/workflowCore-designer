@@ -4,18 +4,21 @@
     <div class="action-node__handles">
       <Handle
         type="source"
+        :is-valid-connection="isValidConnection"
         :position="Position.Top"
         id="top-handle"
         class="action-node__handle action-node__handle--top"
       />
       <Handle
         type="source"
+        :is-valid-connection="isValidConnection"
         :position="Position.Left"
         id="left-handle"
         class="action-node__handle action-node__handle--left"
       />
       <Handle
         type="source"
+        :is-valid-connection="isValidConnection"
         :position="Position.Right"
         id="right-handle"
         class="action-node__handle action-node__handle--right"
@@ -23,6 +26,7 @@
       <Handle
         type="source"
         :position="Position.Bottom"
+        :is-valid-connection="isValidConnection"
         id="bottom-handle"
         class="action-node__handle action-node__handle--bottom"
       />
@@ -186,12 +190,20 @@ export default {
       nextInputId: 0,
       nextOutputId: 0,
 
+      hasConnection: false,
+
       inputsList: this.data.inputsList || [],
       outputsList: this.data.outputsList || [],
     }
   },
 
   watch: {
+    data: {
+      handler(value) {
+        this.hasConnection = value.hasConnection
+      },
+      deep: true,
+    },
     inputsList: {
       handler(newinputsList) {
         this.$emit('inputsListChange', this.id, newinputsList)
@@ -207,6 +219,8 @@ export default {
   },
 
   mounted() {
+    this.hasConnection = this.data.hasConnection
+
     const editingNameHeader = useTemplateRef('editingNameHeader')
     onClickOutside(editingNameHeader, () => {
       if (this.isEditingNameHeader) {
@@ -217,6 +231,10 @@ export default {
   },
 
   methods: {
+    isValidConnection(connection) {
+      return !(connection.source === this.id && this.hasConnection)
+    },
+
     enableHeaderEditing() {
       if (this.nameHeader.length === 0) {
         this.nameHeader = 'Название действия'
@@ -224,9 +242,11 @@ export default {
 
       this.isEditingNameHeader = true
     },
+
     deleteNode() {
       this.$emit('confirmDeleteNode', this.id, this.nameNode)
     },
+
     addInput() {
       this.inputsList.push({
         id: this.nextInputId++,
@@ -234,9 +254,11 @@ export default {
         value: '',
       })
     },
+
     deleteInput(index) {
       this.inputsList.splice(index, 1)
     },
+
     addOutput() {
       this.outputsList.push({
         id: this.nextOutputId++,
@@ -244,6 +266,7 @@ export default {
         value: '',
       })
     },
+
     deleteOutput(index) {
       this.outputsList.splice(index, 1)
     },
