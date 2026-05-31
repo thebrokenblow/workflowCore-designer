@@ -56,7 +56,13 @@
             <span class="action-node__section-icon">&#x1F4E5;</span>
             Входные параметры
           </div>
-          <button class="action-node__add-btn" @click.stop="addInput">+</button>
+          <button
+            class="action-node__add-btn"
+            :disabled="inputsList.length >= maxCountInputParametrs"
+            @click.stop="addInput"
+          >
+            +
+          </button>
         </div>
         <div class="action-node__params-list">
           <div
@@ -94,7 +100,13 @@
             <span class="action-node__section-icon">&#x1F4E4;</span>
             Выходные параметры
           </div>
-          <button class="action-node__add-btn" @click.stop="addOutput">+</button>
+          <button
+            class="action-node__add-btn"
+            :disabled="outputsList.length >= maxCountOutputParametrs"
+            @click.stop="addOutput"
+          >
+            +
+          </button>
         </div>
         <div class="action-node__params-list">
           <div
@@ -194,6 +206,9 @@ export default {
 
       inputsList: this.data.inputsList || [],
       outputsList: this.data.outputsList || [],
+
+      maxCountInputParametrs: 10,
+      maxCountOutputParametrs: 10,
     }
   },
 
@@ -252,11 +267,13 @@ export default {
     },
 
     addInput() {
-      this.inputsList.push({
-        id: this.nextInputId++,
-        variableName: '',
-        value: '',
-      })
+      if (this.inputsList.length < this.maxCountInputParametrs) {
+        this.inputsList.push({
+          id: this.nextInputId++,
+          variableName: '',
+          value: '',
+        })
+      }
     },
 
     deleteInput(index) {
@@ -264,11 +281,13 @@ export default {
     },
 
     addOutput() {
-      this.outputsList.push({
-        id: this.nextOutputId++,
-        variableName: '',
-        value: '',
-      })
+      if (this.outputsList.length < this.maxCountOutputParametrs) {
+        this.outputsList.push({
+          id: this.nextOutputId++,
+          variableName: '',
+          value: '',
+        })
+      }
     },
 
     deleteOutput(index) {
@@ -475,10 +494,16 @@ export default {
   flex-shrink: 0;
 }
 
-.action-node__add-btn:hover {
+.action-node__add-btn:hover:not(:disabled) {
   background: #4caf50;
   color: white;
   transform: scale(1.05);
+}
+
+.action-node__add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Список параметров */

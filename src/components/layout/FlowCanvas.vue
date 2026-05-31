@@ -118,8 +118,10 @@ export default {
     const workflowSchemeJson = localStorage.getItem('workflowScheme')
     const workflowScheme = JSON.parse(workflowSchemeJson)
 
-    this.nodes = workflowScheme.nodes
-    this.edges = workflowScheme.edges
+    if (workflowScheme && workflowScheme.nodes && workflowScheme.edges) {
+      this.nodes = workflowScheme.nodes
+      this.edges = workflowScheme.edges
+    }
 
     window.addEventListener('beforeunload', this.saveBeforeUnload)
   },
